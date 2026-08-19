@@ -30,9 +30,9 @@ public class Korvus {
 
     private void start() {
         while(true) {
-            String userReply = userInput.nextLine();
+            String userReply = userInput.nextLine().trim();
 
-            switch (userReply.trim()) {
+            switch (userReply) {
                 case "bye":
                     goodbye();
                 default:
@@ -67,42 +67,37 @@ public class Korvus {
 
     // For formatting
     private void say(String text) {
-        if(text.isEmpty()) {
-            System.out.println("> Caw");
-            return;
-        }
-
         int lastSpace = -1, lastLine = -1;
-        StringBuilder newText = new StringBuilder("> ");
+        StringBuilder newText = new StringBuilder();
 
         for (int i = 0; i < text.length(); i++) {
             if(text.charAt(i) == ' ') {
                 lastSpace = i;
             }
 
-            if(text.charAt(i) == '\n') {
-                newText.append(text, lastLine + 1, i);
-                newText.append("\n  ");
-
-                lastLine = i;
-            }
-
             //End of line
-            else if(i - lastLine > MAX_LENGTH - 2) {
+            if(i - lastLine > MAX_LENGTH - 2) {
+                if(newText.isEmpty()) newText.append("> ");
+                else newText.append("  ");
+
                 if(lastSpace > lastLine) {
-                    newText.append(text, lastLine + 1, lastSpace);
-                    newText.append("\n  ");
+                    newText.append(text.substring(lastLine + 1, lastSpace));
+                    newText.append("\n");
 
                     lastLine = lastSpace;
                 } else {
-                    newText.append(text, lastLine + 1, lastLine + MAX_LENGTH - 1);
-                    newText.append("\n  ");
+                    newText.append(text.substring(lastLine + 1, lastLine + MAX_LENGTH - 1));
+                    newText.append("\n");
 
                     lastLine += MAX_LENGTH - 2;
                 }
             }
         }
+
+        if(newText.isEmpty()) newText.append("> ");
+        else newText.append("  ");
         newText.append(text.substring(lastLine + 1));
+
         botOutput.println(newText);
     }
 }
