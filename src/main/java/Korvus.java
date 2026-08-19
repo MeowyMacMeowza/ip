@@ -39,6 +39,10 @@ public class Korvus {
                 case "bye":
                     goodbye();
                     break;
+                case "help":
+                    help();
+                    divider();
+                    break;
                 case "list", "lists", "task", "tasks":
                     printTasks();
                     divider();
@@ -60,7 +64,16 @@ public class Korvus {
         botOutput.println(banner);
         say("Nice to meet you!");
         say("I am caw-lled Korvus, your personal chatbot for keeping track of shiny things.");
+        say("To a get a list of cawmands, tweet 'help'!");
         divider();
+    }
+
+    private void help() {
+        say("Here are a list of cawmands!");
+        say("list[s], task[s] - View your tasks");
+        say("add task <task> - Adds a task with name <task>");
+        say("bye - Closes the program (goodbye...)");
+        say("help - Hi! I'm here to help!");
     }
 
     private void divider() {
