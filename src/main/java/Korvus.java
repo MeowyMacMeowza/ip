@@ -7,11 +7,11 @@ public class Korvus {
     private static int MAX_LENGTH = 60;
     private static String banner =
             """
-             ,_
-             | | _ ____--___   ___   _  ____
+              /|
+             / | _ ____--___   ___   _  ____
              | |/ |    |  __| / / | | |/ __/
              |   <| [] | | \\ ' /| |_| |\\__ \\
-             |_|\\_|____|_|  \\_/  \\__,_|\\___/
+             |_/\\_|____|_|  \\_/  \\__,_|\\___/
             """;
 
     private Scanner userInput;
@@ -61,6 +61,7 @@ public class Korvus {
 
     private void greet() {
         divider();
+        botOutput.println();
         botOutput.println(banner);
         say("Nice to meet you!");
         say("I am caw-lled Korvus, your personal chatbot for keeping track of shiny things.");
