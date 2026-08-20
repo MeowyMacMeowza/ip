@@ -84,7 +84,7 @@ public class Korvus {
                     }
                 }
                 default -> {
-                    say(userReply);
+                    say(userReply+"~");
                     divider();
                 }
             }
@@ -97,12 +97,12 @@ public class Korvus {
         botOutput.println(banner);
         say("Nice to meet you!");
         say("I am caw-lled Korvus, your personal chatbot for keeping track of shiny things.");
-        say("To a get a list of cawmands, tweet 'help'!");
+        say("To get a list of cawmands, tweet 'help'!");
         divider();
     }
 
     private void help() {
-        say("Here are a list of cawmands!\n");
+        say("Here are a list of cawmands!\nFor any invalid cawmands, I will simply parrot them back~");
         say("list[s], task[s] - View your tasks.");
         say("""
                 add task <task> - Adds a task with name <task>.
