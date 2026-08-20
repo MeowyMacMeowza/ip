@@ -86,6 +86,15 @@ public class Korvus {
                         undoTask(sTask);
                     }
                 }
+                // Delete Task
+                case String s when s.matches("del(ete)? task .*") -> {
+                    String sTask = s.split("del(ete)? task ",2)[1];
+                    try {
+                        deleteTask(Integer.parseInt(sTask) - 1);
+                    } catch (Exception e) {
+                        deleteTask(sTask);
+                    }
+                }
                 default -> {
                     say(userReply+"~");
                     divider();
@@ -123,6 +132,11 @@ public class Korvus {
                 If there are duplicate tasks with the same name, it will only use the first one.""");
         say("""
                 undo task <q_task> - Marks task with info <q_task> as not done.
+                
+                <q_task> is first assumed to be the task id, but if invalid then assumed to be task name.
+                If there are duplicate tasks with the same name, it will only use the first one.""");
+        say("""
+                delete task <q_task> - Removes task with info <q_task> from the tasklist.
                 
                 <q_task> is first assumed to be the task id, but if invalid then assumed to be task name.
                 If there are duplicate tasks with the same name, it will only use the first one.""");
@@ -194,7 +208,6 @@ public class Korvus {
             doTask(id);
         }
     }
-
     // Tries to do task given a (valid) id
     private void doTask(int id) {
         boolean status = tasklist.get(id).doTask();
@@ -231,6 +244,34 @@ public class Korvus {
         } else {
             say(String.format("Oh no... Failed to unmark task: Task has not been done\n%s",tasklist.get(id)));
         }
+        divider();
+    }
+
+    // Tries to delete task given a name
+    private void deleteTask(String sTask) {
+        int id = -1;
+        for (int i = 0; i < tasklist.size(); i++) {
+            if(!tasklist.get(i).getName().equals(sTask)) continue;
+            id = i;
+            break;
+        }
+
+        //Failed to find task
+        if(id == -1) {
+            say(String.format("Oh no... Failed to delete task: Task cannot be found.\nName: %s",sTask));
+            divider();
+        } else{
+            deleteTask(id);
+        }
+    }
+    // Tries to do task given a (valid) id
+    private void deleteTask(int id) {
+        Task delTask = tasklist.remove(id);
+        say(String.format("""
+                Success! Task (%s) has been deleted!
+                Take note that the other tasks may have new indexes now.
+                Do tweet "list" or "task" to view your updated tasklist."""
+                , delTask.getName()));
         divider();
     }
 
