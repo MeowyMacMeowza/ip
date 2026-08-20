@@ -17,6 +17,7 @@ public class Korvus {
     private Scanner userInput;
     private PrintStream botOutput;
     private ArrayList<Task> tasklist;
+    private boolean isActive;
 
     private Korvus(InputStream input, PrintStream output) {
         this.userInput = new Scanner(input);
@@ -26,13 +27,15 @@ public class Korvus {
 
     public static void main(String[] args) {
         Korvus bot = new Korvus(System.in, System.out);
-
-        bot.greet();
         bot.start();
     }
 
     private void start() {
-        while(true) {
+        if(isActive) throw new RuntimeException("Already Running!");
+        else isActive = true;
+
+        this.greet();
+        while(isActive) {
             String userReply = userInput.nextLine().trim();
 
             switch (userReply) {
@@ -142,7 +145,7 @@ public class Korvus {
         divider();
 
         // Only runs when user says bye
-        System.exit(0);
+        isActive = false;
     }
 
     private void addTask(String task) {
