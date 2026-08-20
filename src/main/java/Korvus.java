@@ -105,30 +105,27 @@ public class Korvus {
     }
 
     private void help() {
-        say("Here are a list of cawmands!\nFor any invalid cawmands, I will simply parrot them back~");
+        say("Here are a list of cawmands!\nFor any invalid cawmands, I will simply parrot them back~\n");
         say("list[s], task[s] - View your tasks.");
         say("""
                 add task <task> - Adds a task with name <task>.
                 Use the flags -t for a ToDo, -d for a Deadline and -e for an Event.
                  -t <task> : Adds a ToDo Task.
                  -d <task> | <deadline> : Adds a Deadline Task with an (optional) deadline.
-                 -e <task> | <start> | <end> : Adds an Event Task with (optional) duration.
-                """);
+                 -e <task> | <start> | <end> : Adds an Event Task with (optional) duration.""");
         say("add todo <task> - Adds a ToDo Task.");
         say("add deadline <task> | <deadline> - Adds a Deadline Task with an (optional) deadline.");
         say("add event <task> | <start> | <end> - Adds an Event Task with (optional) duration.");
         say("""
-                do task <q_task> - Marks task with info <q_task> as done.\
+                do task <q_task> - Marks task with info <q_task> as done.
                 
                 <q_task> is first assumed to be the task id, but if invalid then assumed to be task name.
-                If there are duplicate tasks with the same name, it will only use the first one.
-                """);
+                If there are duplicate tasks with the same name, it will only use the first one.""");
         say("""
-                undo task <q_task> - Marks task with info <q_task> as not done.\
+                undo task <q_task> - Marks task with info <q_task> as not done.
                 
                 <q_task> is first assumed to be the task id, but if invalid then assumed to be task name.
-                If there are duplicate tasks with the same name, it will only use the first one.
-                """);
+                If there are duplicate tasks with the same name, it will only use the first one.""");
         say("bye - Closes the program (goodbye...)");
         say("help - Hi there! I'm here to help!");
     }
@@ -209,7 +206,7 @@ public class Korvus {
         divider();
     }
 
-    // Tries to do task given a name
+    // Tries to undo task given a name
     private void undoTask(String sTask) {
         int id = -1;
         for (int i = 0; i < tasklist.size(); i++) {
@@ -226,8 +223,7 @@ public class Korvus {
             undoTask(id);
         }
     }
-
-    // Tries to do task given a (valid) id
+    // Tries to undo task given a (valid) id
     private void undoTask(int id) {
         boolean status = tasklist.get(id).undoTask();
         if(status) {
