@@ -146,29 +146,35 @@ public class Korvus {
     }
 
     private void addTask(String task) {
-        Task newTask = switch (task) {
-            // Format: ... -t <task>
-            case String todo when todo.startsWith("-t ") -> {
-                yield new ToDo(task.substring(3));
-            }
-            // Format: ... -d <task> | <time>
-            case String deadline when deadline.startsWith("-d ") -> {
-                String[] taskInfo = deadline.substring(3).split(" \\| ", 2);
-                if (taskInfo.length > 1) yield new Deadline(taskInfo[0], taskInfo[1]);
-                else yield new Deadline(taskInfo[0]);
-            }
-            // Format: ... -e <task> | <time1> | <time2>
-            case String event when event.startsWith("-e ") -> {
-                String[] taskInfo = event.substring(3).split(" \\| ", 3);
-                if (taskInfo.length > 2) yield new Event(taskInfo[0], taskInfo[1], taskInfo[2]);
-                else yield new Event(taskInfo[0]);
-            }
-            // No flag -> assume todo
-            default -> new ToDo(task);
-        };
-        tasklist.add(newTask);
-        say(String.format("Added task:\n%d. %s", tasklist.size() ,newTask));
-        divider();
+        try {
+            Task newTask = switch (task) {
+                // Format: ... -t <task>
+                case String todo when todo.startsWith("-t ") -> {
+                    yield new ToDo(task.substring(3));
+                }
+                // Format: ... -d <task> | <time>
+                case String deadline when deadline.startsWith("-d ") -> {
+                    String[] taskInfo = deadline.substring(3).split(" \\| ", 2);
+                    if (taskInfo.length > 1) yield new Deadline(taskInfo[0], taskInfo[1]);
+                    else yield new Deadline(taskInfo[0]);
+                }
+                // Format: ... -e <task> | <time1> | <time2>
+                case String event when event.startsWith("-e ") -> {
+                    String[] taskInfo = event.substring(3).split(" \\| ", 3);
+                    if (taskInfo.length > 2) yield new Event(taskInfo[0], taskInfo[1], taskInfo[2]);
+                    else yield new Event(taskInfo[0]);
+                }
+                // No flag -> assume todotask
+                default -> new ToDo(task);
+            };
+            tasklist.add(newTask);
+            say(String.format("Added task:\n%d. %s", tasklist.size(), newTask));
+            divider();
+        } catch(InvalidTaskException e) {
+            say("An error occurred while creating task!");
+            say(e.getMessage());
+            divider();
+        }
     }
 
     // Tries to do task given a name

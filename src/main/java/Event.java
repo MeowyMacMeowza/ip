@@ -2,13 +2,13 @@ public class Event extends Task{
     String start;
     String end;
 
-    public Event(String name, String start, String end) {
+    public Event(String name, String start, String end) throws InvalidTaskException {
         super(name);
         this.start = start;
         this.end = end;
     }
 
-    public Event(String name) {
+    public Event(String name) throws InvalidTaskException {
         this(name, "unknown", "unknown");
     }
 

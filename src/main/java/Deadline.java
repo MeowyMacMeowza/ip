@@ -1,12 +1,12 @@
 public class Deadline extends Task{
     String due;
 
-    public Deadline(String name, String due) {
+    public Deadline(String name, String due) throws InvalidTaskException {
         super(name);
         this.due = due;
     }
 
-    public Deadline(String name) {
+    public Deadline(String name) throws InvalidTaskException {
         this(name, "unknown");
     }
 

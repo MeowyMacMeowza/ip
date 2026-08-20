@@ -2,7 +2,8 @@ public abstract class Task {
     private boolean isDone;
     private String name;
 
-    public Task(String name) {
+    public Task(String name) throws InvalidTaskException {
+        if(name.startsWith("-")) throw new InvalidTaskException("Task name cannot start with '-'! Are you sure that you typed the name correctly?");
         this.name = name;
         this.isDone = false;
     }
