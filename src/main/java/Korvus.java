@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Korvus {
-    private static int MAX_LENGTH = 60;
+    private static int MAX_LENGTH = 80;
     private static String banner =
             """
               /|
@@ -52,6 +52,19 @@ public class Korvus {
                     String sTask = s.split("add task ",2)[1];
                     addTask(sTask);
                 }
+                // Add Task subclasses
+                case String s when s.matches("(add )*todo .*") -> {
+                    String sTask = "-t " + s.split("(add )*todo ",2)[1];
+                    addTask(sTask);
+                }
+                case String s when s.matches("(add )*deadline .*") -> {
+                    String sTask = "-d " + s.split("(add )*deadline ",2)[1];
+                    addTask(sTask);
+                }
+                case String s when s.matches("(add )*event .*") -> {
+                    String sTask = "-e " + s.split("(add )*event ",2)[1];
+                    addTask(sTask);
+                }
                 // Do Task
                 case String s when s.matches("do(ne)? task .*") -> {
                     String sTask = s.split("do(ne)? task ",2)[1];
@@ -89,13 +102,32 @@ public class Korvus {
     }
 
     private void help() {
-        say("Here are a list of cawmands!");
-        say("list[s], task[s] - View your tasks");
-        say("add task <task> - Adds a task with name <task>");
-        say("do task <q_task> - Marks task with info <q_task> as done. <q_task> is first assumed to be the task id, but if invalid then assumed to be task name. If there are duplicate tasks with the same name, it will only use the first one.");
-        say("undo task <q_task> - Marks task with info <q_task> as not done. <q_task> is first assumed to be the task id, but if invalid then assumed to be task name. If there are duplicate tasks with the same name, it will only use the first one.");
+        say("Here are a list of cawmands!\n");
+        say("list[s], task[s] - View your tasks.");
+        say("""
+                add task <task> - Adds a task with name <task>.
+                Use the flags -t for a ToDo, -d for a Deadline and -e for an Event.
+                 -t <task> : Adds a ToDo Task.
+                 -d <task> | <deadline> : Adds a Deadline Task with an (optional) deadline.
+                 -e <task> | <start> | <end> : Adds an Event Task with (optional) duration.
+                """);
+        say("add todo <task> - Adds a ToDo Task.");
+        say("add deadline <task> | <deadline> - Adds a Deadline Task with an (optional) deadline.");
+        say("add event <task> | <start> | <end> - Adds an Event Task with (optional) duration.");
+        say("""
+                do task <q_task> - Marks task with info <q_task> as done.\
+                
+                <q_task> is first assumed to be the task id, but if invalid then assumed to be task name.
+                If there are duplicate tasks with the same name, it will only use the first one.
+                """);
+        say("""
+                undo task <q_task> - Marks task with info <q_task> as not done.\
+                
+                <q_task> is first assumed to be the task id, but if invalid then assumed to be task name.
+                If there are duplicate tasks with the same name, it will only use the first one.
+                """);
         say("bye - Closes the program (goodbye...)");
-        say("help - Hi! I'm here to help!");
+        say("help - Hi there! I'm here to help!");
     }
 
     private void divider() {
@@ -114,8 +146,28 @@ public class Korvus {
     }
 
     private void addTask(String task) {
-        say(String.format("Added task: %s", task));
-        tasklist.add(new Task(task));
+        Task newTask = switch (task) {
+            // Format: ... -t <task>
+            case String todo when todo.startsWith("-t ") -> {
+                yield new ToDo(task.substring(3));
+            }
+            // Format: ... -d <task> | <time>
+            case String deadline when deadline.startsWith("-d ") -> {
+                String[] taskInfo = deadline.substring(3).split(" \\| ", 2);
+                if (taskInfo.length > 1) yield new Deadline(taskInfo[0], taskInfo[1]);
+                else yield new Deadline(taskInfo[0]);
+            }
+            // Format: ... -e <task> | <time1> | <time2>
+            case String event when event.startsWith("-e ") -> {
+                String[] taskInfo = event.substring(3).split(" \\| ", 3);
+                if (taskInfo.length > 2) yield new Event(taskInfo[0], taskInfo[1], taskInfo[2]);
+                else yield new Event(taskInfo[0]);
+            }
+            // No flag -> assume todo
+            default -> new ToDo(task);
+        };
+        tasklist.add(newTask);
+        say(String.format("Added task:\n%d. %s", tasklist.size() ,newTask));
         divider();
     }
 
