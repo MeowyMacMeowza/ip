@@ -36,25 +36,41 @@ public class Korvus {
             String userReply = userInput.nextLine().trim();
 
             switch (userReply) {
-                case "bye":
+                case "bye" -> {
                     goodbye();
-                    break;
-                case "help":
+                }
+                case "help" -> {
                     help();
                     divider();
-                    break;
-                case "list", "lists", "task", "tasks":
+                }
+                case "list", "lists", "task", "tasks" -> {
                     printTasks();
                     divider();
-                    break;
-                case String s when s.matches("add task .*"):
-                    say(String.format("Adding task: %s", s.substring(9)));
-                    tasklist.add(new Task(s.substring(9)));
-                    divider();
-                    break;
-                default:
+                }
+                // Add Task
+                case String s when s.matches("add task .*") -> {
+                    addTask(s.substring(9));
+                }
+                // Do Task
+                case String s when s.matches("do(ne)? task .*") -> {
+                    try {
+                        doTask(Integer.parseInt(s.substring(10)) - 1);
+                    } catch (Exception e) {
+                        doTask(s.substring(10));
+                    }
+                }
+                // Undo Task
+                case String s when s.matches("undo(ne)? task .*") -> {
+                    try {
+                        undoTask(Integer.parseInt(s.substring(10)) - 1);
+                    } catch (Exception e) {
+                        undoTask(s.substring(10));
+                    }
+                }
+                default -> {
                     say(userReply);
                     divider();
+                }
             }
         }
     }
@@ -90,6 +106,70 @@ public class Korvus {
 
         // Only runs when user says bye
         System.exit(0);
+    }
+
+    private void addTask(String task) {
+        say(String.format("Added task: %s", task));
+        tasklist.add(new Task(task));
+        divider();
+    }
+
+    // Tries to do task given a name
+    private void doTask(String sTask) {
+        int id = -1;
+        for (int i = 0; i < tasklist.size(); i++) {
+            if(!tasklist.get(i).getName().equals(sTask)) continue;
+            id = i;
+            break;
+        }
+
+        //Failed to find task
+        if(id == -1) {
+            say(String.format("Oh no... Failed to mark task: Task cannot be found.\nName: %s",sTask));
+            divider();
+        } else{
+            doTask(id);
+        }
+    }
+
+    // Tries to do task given a (valid) id
+    private void doTask(int id) {
+        boolean status = tasklist.get(id).doTask();
+        if(status) {
+            say(String.format("Success! Task has been marked done!\n%s",tasklist.get(id)));
+        } else {
+            say(String.format("Oh no... Failed to mark task: Task has already been done\n%s",tasklist.get(id)));
+        }
+        divider();
+    }
+
+    // Tries to do task given a name
+    private void undoTask(String sTask) {
+        int id = -1;
+        for (int i = 0; i < tasklist.size(); i++) {
+            if(!tasklist.get(i).getName().equals(sTask)) continue;
+            id = i;
+            break;
+        }
+
+        //Failed to find task
+        if(id == -1) {
+            say(String.format("Oh no... Failed to unmark task: Task cannot be found.\nName: %s",sTask));
+            divider();
+        } else{
+            undoTask(id);
+        }
+    }
+
+    // Tries to do task given a (valid) id
+    private void undoTask(int id) {
+        boolean status = tasklist.get(id).undoTask();
+        if(status) {
+            say(String.format("Success! Task has been unmarked!\n%s",tasklist.get(id)));
+        } else {
+            say(String.format("Oh no... Failed to unmark task: Task has not been done\n%s",tasklist.get(id)));
+        }
+        divider();
     }
 
     private void printTasks() {

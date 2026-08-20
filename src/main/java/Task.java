@@ -19,6 +19,10 @@ public class Task {
         return true;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String toString() {
         return String.format("[%s] %s",isDone ? "x" : " ",name);
