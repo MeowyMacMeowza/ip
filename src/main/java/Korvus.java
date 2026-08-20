@@ -36,35 +36,38 @@ public class Korvus {
             String userReply = userInput.nextLine().trim();
 
             switch (userReply) {
-                case "bye" -> {
+                case String s when s.matches("(good*)*bye") -> {
                     goodbye();
                 }
                 case "help" -> {
                     help();
                     divider();
                 }
-                case "list", "lists", "task", "tasks" -> {
+                case String s when s.matches("(task(s)*)*(list(s)*)*") -> {
                     printTasks();
                     divider();
                 }
                 // Add Task
                 case String s when s.matches("add task .*") -> {
-                    addTask(s.substring(9));
+                    String sTask = s.split("add task ",2)[1];
+                    addTask(sTask);
                 }
                 // Do Task
                 case String s when s.matches("do(ne)? task .*") -> {
+                    String sTask = s.split("do(ne)? task ",2)[1];
                     try {
-                        doTask(Integer.parseInt(s.substring(10)) - 1);
+                        doTask(Integer.parseInt(sTask) - 1);
                     } catch (Exception e) {
-                        doTask(s.substring(10));
+                        doTask(sTask);
                     }
                 }
                 // Undo Task
                 case String s when s.matches("undo(ne)? task .*") -> {
+                    String sTask = s.split("undo(ne)? task ",2)[1];
                     try {
-                        undoTask(Integer.parseInt(s.substring(10)) - 1);
+                        undoTask(Integer.parseInt(sTask) - 1);
                     } catch (Exception e) {
-                        undoTask(s.substring(10));
+                        undoTask(sTask);
                     }
                 }
                 default -> {
@@ -89,6 +92,8 @@ public class Korvus {
         say("Here are a list of cawmands!");
         say("list[s], task[s] - View your tasks");
         say("add task <task> - Adds a task with name <task>");
+        say("do task <q_task> - Marks task with info <q_task> as done. <q_task> is first assumed to be the task id, but if invalid then assumed to be task name. If there are duplicate tasks with the same name, it will only use the first one.");
+        say("undo task <q_task> - Marks task with info <q_task> as not done. <q_task> is first assumed to be the task id, but if invalid then assumed to be task name. If there are duplicate tasks with the same name, it will only use the first one.");
         say("bye - Closes the program (goodbye...)");
         say("help - Hi! I'm here to help!");
     }
