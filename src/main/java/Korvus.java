@@ -39,14 +39,14 @@ public class Korvus {
             String userReply = userInput.nextLine().trim();
 
             switch (userReply) {
-                case String s when s.matches("(good*)*bye") -> {
+                case String s when s.matches("(good)?bye") -> {
                     goodbye();
                 }
                 case "help" -> {
                     help();
                     divider();
                 }
-                case String s when s.matches("(task(s)*)*(list(s)*)*") -> {
+                case String s when s.matches("(task(s)?)?(list(s)?)?") -> {
                     printTasks();
                     divider();
                 }
@@ -56,16 +56,16 @@ public class Korvus {
                     addTask(sTask);
                 }
                 // Add Task subclasses
-                case String s when s.matches("(add )*todo .*") -> {
-                    String sTask = "-t " + s.split("(add )*todo ",2)[1];
+                case String s when s.matches("(add )?todo .*") -> {
+                    String sTask = "-t " + s.split("(add )?todo ",2)[1];
                     addTask(sTask);
                 }
-                case String s when s.matches("(add )*deadline .*") -> {
-                    String sTask = "-d " + s.split("(add )*deadline ",2)[1];
+                case String s when s.matches("(add )?deadline .*") -> {
+                    String sTask = "-d " + s.split("(add )?deadline ",2)[1];
                     addTask(sTask);
                 }
-                case String s when s.matches("(add )*event .*") -> {
-                    String sTask = "-e " + s.split("(add )*event ",2)[1];
+                case String s when s.matches("(add )?event .*") -> {
+                    String sTask = "-e " + s.split("(add )?event ",2)[1];
                     addTask(sTask);
                 }
                 // Do Task
