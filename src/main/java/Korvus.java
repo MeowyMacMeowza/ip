@@ -46,7 +46,7 @@ public class Korvus {
                     help();
                     divider();
                 }
-                case String s when s.matches("(task(s)?)?(list(s)?)?") -> {
+                case String s when s.matches("(task(s)?)|(list(s)?)") -> {
                     printTasks();
                     divider();
                 }
@@ -96,7 +96,7 @@ public class Korvus {
                     }
                 }
                 default -> {
-                    say(userReply+"~");
+                    say(userReply.isEmpty() ? "Caw~" : userReply +"~");
                     divider();
                 }
             }
