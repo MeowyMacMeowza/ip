@@ -1,6 +1,7 @@
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Korvus {
@@ -16,17 +17,25 @@ public class Korvus {
 
     private Scanner userInput;
     private PrintStream botOutput;
-    private ArrayList<Task> tasklist;
+    private Tasklist tasklist;
+    private StorageParser<Tasklist> tasklistParser;
+    private Storage storage;
+    private Config config;
     private boolean isActive;
 
-    private Korvus(InputStream input, PrintStream output) {
+    private Korvus() {
+        this(System.in, System.out, "");
+    }
+
+    private Korvus(InputStream input, PrintStream output, String storagePath) {
         this.userInput = new Scanner(input);
         this.botOutput = output;
-        this.tasklist = new ArrayList<>(50);
+        this.tasklist = new Tasklist();
+        this.storage = new Storage(storagePath);
     }
 
     public static void main(String[] args) {
-        Korvus bot = new Korvus(System.in, System.out);
+        Korvus bot = new Korvus(System.in, System.out, "");
         bot.start();
     }
 
@@ -34,21 +43,49 @@ public class Korvus {
         if(isActive) throw new RuntimeException("Already Running!");
         else isActive = true;
 
+        say("Loading config file...");
+        try {
+            this.config = this.storage.readConfigFile();
+            say("Loaded config file!");
+        } catch (FileNotFoundException e) {
+            this.config = Config.generateNewConfig();
+            say("Failed to find config file, using default configurations~");
+        }
+
+        // Adding Parsers to Storage
+        try {
+            this.tasklistParser = new StorageParser<Tasklist>(this.storage, this.config.getValue("tasklist_file_path"));
+        } catch (StorageConflictException e) {
+            say(String.format("""
+                    Warning: Failed to connect parser to tasklist!
+                    Tasklist will be empty and cannot be saved to storage.
+                    Error: %s""", e.getMessage()));
+        }
+
+        // Read from files
+        try {
+            boolean hasErrors = this.tasklist.readFromParser(this.tasklistParser);
+            if(hasErrors) {
+                say("Warning: Failed to read some tasks! Tasklist may be missing tasks.");
+            }
+        } catch (IOException e) {
+            say("Warning: Failed tasklist file! Tasklist will be empty.");
+        }
+        divider();
+
         this.greet();
         while(isActive) {
             String userReply = userInput.nextLine().trim();
 
             switch (userReply) {
-                case String s when s.matches("(good)?bye") -> {
-                    goodbye();
+                case String s when s.matches("(good)?bye( -f)?") -> {
+                    goodbye(s.matches(".*-f.*"));
                 }
                 case "help" -> {
                     help();
-                    divider();
                 }
                 case String s when s.matches("(task(s)?)|(list(s)?)") -> {
                     printTasks();
-                    divider();
                 }
                 // Add Task
                 case String s when s.matches("add task .*") -> {
@@ -71,29 +108,17 @@ public class Korvus {
                 // Do Task
                 case String s when s.matches("do(ne)? task .*") -> {
                     String sTask = s.split("do(ne)? task ",2)[1];
-                    try {
-                        doTask(Integer.parseInt(sTask) - 1);
-                    } catch (Exception e) {
-                        doTask(sTask);
-                    }
+                    doTask(sTask);
                 }
                 // Undo Task
                 case String s when s.matches("undo(ne)? task .*") -> {
                     String sTask = s.split("undo(ne)? task ",2)[1];
-                    try {
-                        undoTask(Integer.parseInt(sTask) - 1);
-                    } catch (Exception e) {
-                        undoTask(sTask);
-                    }
+                    undoTask(sTask);
                 }
                 // Delete Task
                 case String s when s.matches("del(ete)? task .*") -> {
                     String sTask = s.split("del(ete)? task ",2)[1];
-                    try {
-                        deleteTask(Integer.parseInt(sTask) - 1);
-                    } catch (Exception e) {
-                        deleteTask(sTask);
-                    }
+                    deleteTask(sTask);
                 }
                 default -> {
                     say(userReply.isEmpty() ? "Caw~" : userReply +"~");
@@ -120,11 +145,11 @@ public class Korvus {
                 add task <task> - Adds a task with name <task>.
                 Use the flags -t for a ToDo, -d for a Deadline and -e for an Event.
                  -t <task> : Adds a ToDo Task.
-                 -d <task> | <deadline> : Adds a Deadline Task with an (optional) deadline.
-                 -e <task> | <start> | <end> : Adds an Event Task with (optional) duration.""");
+                 -d <task> // <deadline> : Adds a Deadline Task with an (optional) deadline.
+                 -e <task> // <start> // <end> : Adds an Event Task with (optional) duration.""");
         say("add todo <task> - Adds a ToDo Task.");
-        say("add deadline <task> | <deadline> - Adds a Deadline Task with an (optional) deadline.");
-        say("add event <task> | <start> | <end> - Adds an Event Task with (optional) duration.");
+        say("add deadline <task> // <deadline> - Adds a Deadline Task with an (optional) deadline.");
+        say("add event <task> // <start> // <end> - Adds an Event Task with (optional) duration.");
         say("""
                 do task <q_task> - Marks task with info <q_task> as done.
                 
@@ -142,6 +167,7 @@ public class Korvus {
                 If there are duplicate tasks with the same name, it will only use the first one.""");
         say("bye - Closes the program (goodbye...)");
         say("help - Hi there! I'm here to help!");
+        divider();
     }
 
     private void divider() {
@@ -151,19 +177,32 @@ public class Korvus {
         botOutput.println(divider);
     }
 
-    private void goodbye() {
-        say("Goodbye! Eagle to see you again!");
-        divider();
+    private void goodbye(boolean isForced) {
+        say("Saving session information to disk...");
 
         // Only runs when user says bye
         isActive = false;
+        try {
+            if(tasklistParser != null) {
+                tasklistParser.writeStorage(tasklist);
+            }
+            storage.saveConfigFile(config);
+        } catch (IOException e) {
+            if(!isForced) {
+                say(String.format("Failed to save some files!\n%s", e.getMessage()));
+                say("Aborting exit... If you want to force exit, tweet \"goodbye -f\".");
+                return;
+            }
+        }
+
+        say("Goodbye! Eagle to see you again!");
+        divider();
     }
 
     private void addTask(String task) {
         try {
-            Task newTask = Task.generateTask(task);
-            tasklist.add(Task.generateTask(task));
-            say(String.format("Added task:\n%d. %s", tasklist.size(), newTask));
+            String newTask = tasklist.addTask(task);
+            say(String.format("Added task:\n%d. %s", tasklist.getSize(), newTask));
             divider();
         } catch(InvalidTaskException e) {
             say("An error occurred while creating task!");
@@ -172,100 +211,64 @@ public class Korvus {
         }
     }
 
-    // Tries to do task given a name
     private void doTask(String sTask) {
-        int id = -1;
-        for (int i = 0; i < tasklist.size(); i++) {
-            if(!tasklist.get(i).getName().equals(sTask)) continue;
-            id = i;
-            break;
-        }
-
-        //Failed to find task
-        if(id == -1) {
-            say(String.format("Oh no... Failed to mark task: Task cannot be found.\nName: %s",sTask));
-            divider();
-        } else{
-            doTask(id);
-        }
-    }
-    // Tries to do task given a (valid) id
-    private void doTask(int id) {
-        boolean status = tasklist.get(id).doTask();
-        if(status) {
-            say(String.format("Success! Task has been marked done!\n%s",tasklist.get(id)));
-        } else {
-            say(String.format("Oh no... Failed to mark task: Task has already been done\n%s",tasklist.get(id)));
+        try {
+            String taskString;
+            if(sTask.matches("\\d+") && Integer.parseInt(sTask) - 1 < tasklist.getSize()) {
+                taskString = tasklist.doTask(Integer.parseInt(sTask) - 1);
+            } else {
+                taskString = tasklist.doTask(sTask);
+            }
+            say(String.format("Success! Task has been marked done!\n%s", taskString));
+        } catch (InvalidTaskException e) {
+            say(String.format("Oh no... Failed to mark task: %s", e.getMessage()));
         }
         divider();
     }
 
     // Tries to undo task given a name
     private void undoTask(String sTask) {
-        int id = -1;
-        for (int i = 0; i < tasklist.size(); i++) {
-            if(!tasklist.get(i).getName().equals(sTask)) continue;
-            id = i;
-            break;
-        }
-
-        //Failed to find task
-        if(id == -1) {
-            say(String.format("Oh no... Failed to unmark task: Task cannot be found.\nName: %s",sTask));
-            divider();
-        } else{
-            undoTask(id);
-        }
-    }
-    // Tries to undo task given a (valid) id
-    private void undoTask(int id) {
-        boolean status = tasklist.get(id).undoTask();
-        if(status) {
-            say(String.format("Success! Task has been unmarked!\n%s",tasklist.get(id)));
-        } else {
-            say(String.format("Oh no... Failed to unmark task: Task has not been done\n%s",tasklist.get(id)));
+        try {
+            String taskString;
+            if(sTask.matches("\\d+") && Integer.parseInt(sTask) - 1 < tasklist.getSize()) {
+                taskString = tasklist.undoTask(Integer.parseInt(sTask) - 1);
+            } else {
+                taskString = tasklist.undoTask(sTask);
+            }
+            say(String.format("Success! Task has been unmarked!\n%s", taskString));
+        } catch (InvalidTaskException e) {
+            say(String.format("Oh no... Failed to unmark task: %s", e.getMessage()));
         }
         divider();
     }
 
     // Tries to delete task given a name
     private void deleteTask(String sTask) {
-        int id = -1;
-        for (int i = 0; i < tasklist.size(); i++) {
-            if(!tasklist.get(i).getName().equals(sTask)) continue;
-            id = i;
-            break;
+        try {
+            String taskString;
+            if(sTask.matches("\\d+") && Integer.parseInt(sTask) - 1 < tasklist.getSize()) {
+                taskString = tasklist.deleteTask(Integer.parseInt(sTask) - 1);
+            } else {
+                taskString = tasklist.deleteTask(sTask);
+            }
+            say(String.format("""
+                    Success! Task (%s) has been deleted!
+                    Take note that the other tasks may have new indexes now.
+                    Do tweet "list" or "task" to view your updated tasklist.""", taskString));
+        } catch (InvalidTaskException e) {
+            say(String.format("Oh no... Failed to delete task: %s", e.getMessage()));
         }
-
-        //Failed to find task
-        if(id == -1) {
-            say(String.format("Oh no... Failed to delete task: Task cannot be found.\nName: %s",sTask));
-            divider();
-        } else{
-            deleteTask(id);
-        }
-    }
-    // Tries to do task given a (valid) id
-    private void deleteTask(int id) {
-        Task delTask = tasklist.remove(id);
-        say(String.format("""
-                Success! Task (%s) has been deleted!
-                Take note that the other tasks may have new indexes now.
-                Do tweet "list" or "task" to view your updated tasklist."""
-                , delTask.getName()));
         divider();
     }
 
     private void printTasks() {
-        if(tasklist.isEmpty()) {
+        if(tasklist.getSize() == 0) {
             say("You have no tasks! Caw-ngratulations!");
             return;
         }
-        StringBuilder tasks = new StringBuilder("Here are your tasks!");
-        for (int i = 0; i < tasklist.size(); i++) {
-            tasks.append(String.format("\n%d. %s", i+1, tasklist.get(i)));
-        }
-        say(tasks.toString());
+        say("Here are your tasks!");
+        say(tasklist.toString());
+        divider();
     }
 
     // For formatting
