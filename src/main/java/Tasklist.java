@@ -1,13 +1,20 @@
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class Tasklist implements Storable<Tasklist>{
     private static String TASK_SEP = "<>";
 
+    private DateTimeParser dateTimeParser;
     private ArrayList<Task> tasklist;
 
-    public Tasklist() {
+    public Tasklist(DateTimeParser dateTimeParser) {
         tasklist = new ArrayList<>();
+        this.dateTimeParser = dateTimeParser;
+    }
+
+    public Tasklist() {
+        this(new DateTimeParser(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
     }
 
     public int getSize() {
@@ -19,7 +26,7 @@ public class Tasklist implements Storable<Tasklist>{
     }
 
     public String addTask(String task) throws InvalidTaskException {
-        Task newTask = Task.generateTask(task);
+        Task newTask = Task.generateTask(task, dateTimeParser);
         tasklist.add(newTask);
         return newTask.toString();
     }
@@ -111,7 +118,7 @@ public class Tasklist implements Storable<Tasklist>{
 
         for(String sTask : parser.readStorage().split(TASK_SEP)) {
             try {
-                tasklist.add(Task.readTaskFromFile(sTask));
+                tasklist.add(Task.readTaskFromFile(sTask, dateTimeParser));
             } catch (InvalidTaskException | IndexOutOfBoundsException e) {
                 hasErrors = true;
             }

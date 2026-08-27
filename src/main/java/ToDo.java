@@ -1,12 +1,13 @@
 public class ToDo extends Task{
-    public ToDo(boolean done, String name) throws InvalidTaskException {
-        super(done, name);
+    public ToDo(boolean done, String name, DateTimeParser dateTimeParser) throws InvalidTaskException {
+        super(done, name, dateTimeParser);
     }
 
-    public ToDo(String name) throws InvalidTaskException {
-        super(name);
+    public ToDo(String name, DateTimeParser dateTimeParser) throws InvalidTaskException {
+        super(name, dateTimeParser);
     }
 
+    @Override
     protected String writeToStore() {
         return String.format("%s%s%s",
                 TaskType.TODO.flag,

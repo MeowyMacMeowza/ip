@@ -2,6 +2,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class Korvus {
@@ -17,6 +18,7 @@ public class Korvus {
 
     private Scanner userInput;
     private PrintStream botOutput;
+    private DateTimeParser dateTimeParser;
     private Tasklist tasklist;
     private StorageParser<Tasklist> tasklistParser;
     private Storage storage;
@@ -30,7 +32,6 @@ public class Korvus {
     private Korvus(InputStream input, PrintStream output, String storagePath) {
         this.userInput = new Scanner(input);
         this.botOutput = output;
-        this.tasklist = new Tasklist();
         this.storage = new Storage(storagePath);
     }
 
@@ -52,15 +53,26 @@ public class Korvus {
             say("Failed to find config file, using default configurations~");
         }
 
+        // Reading config file
+        this.dateTimeParser = new DateTimeParser(
+                DateTimeFormatter.ofPattern(this.config.getValue("datetime_format"))
+        );
+
         // Adding Parsers to Storage
         try {
-            this.tasklistParser = new StorageParser<Tasklist>(this.storage, this.config.getValue("tasklist_file_path"));
+            this.tasklistParser = new StorageParser<Tasklist>(
+                    this.storage,
+                    this.config.getValue("tasklist_file_path")
+            );
         } catch (StorageConflictException e) {
             say(String.format("""
                     Warning: Failed to connect parser to tasklist!
                     Tasklist will be empty and cannot be saved to storage.
                     Error: %s""", e.getMessage()));
         }
+
+        // Initialise Tasklist
+        this.tasklist = new Tasklist(this.dateTimeParser);
 
         // Read from files
         try {
