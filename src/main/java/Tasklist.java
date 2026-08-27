@@ -104,7 +104,7 @@ public class Tasklist implements Storable<Tasklist>{
     public String writeToString() {
         StringBuilder output = new StringBuilder();
         for (int i = 0; i < tasklist.size(); i++) {
-            output.append(tasklist.get(i).writeToStore(dateTimeParser));
+            output.append(tasklist.get(i).writeToStore());
             if(i+1 != tasklist.size()) {
                 output.append(TASK_SEP);
             }

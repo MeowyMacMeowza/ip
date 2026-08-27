@@ -3,18 +3,18 @@ import java.time.LocalDateTime;
 public class Deadline extends Task{
     LocalDateTime due;
 
-    public Deadline(boolean done, String name, LocalDateTime due) throws InvalidTaskException {
-        super(done, name);
-        this.due = due;
+    public Deadline(boolean done, String name, String due, DateTimeParser dateTimeParser) throws InvalidTaskException {
+        super(done, name, dateTimeParser);
+        this.due = dateTimeParser.parseDateString(due);
     }
 
-    public Deadline(String name, LocalDateTime due) throws InvalidTaskException {
-        super(name);
-        this.due = due;
+    public Deadline(String name, String due, DateTimeParser dateTimeParser) throws InvalidTaskException {
+        super(name, dateTimeParser);
+        this.due = dateTimeParser.parseDateString(due);
     }
 
-    public Deadline(String name) throws InvalidTaskException {
-        this(name, null);
+    public Deadline(String name, DateTimeParser dateTimeParser) throws InvalidTaskException {
+        this(name, null, dateTimeParser);
     }
 
     public LocalDateTime getDue() {
@@ -26,18 +26,18 @@ public class Deadline extends Task{
     }
 
     @Override
-    protected String writeToStore(DateTimeParser dateParser) {
+    protected String writeToStore() {
         return String.format("%s%s%s%s%s",
                 TaskType.DEADLINE.flag,
                 DATA_SEP,
-                super.writeToStore(dateParser),
+                super.writeToStore(),
                 DATA_SEP,
-                dateParser.convertDateToString(this.due)
+                dateTimeParser.convertDateToString(this.due)
         );
     }
 
     @Override
     public String toString() {
-        return String.format("[D]%s (Due: %s)",super.toString(), due);
+        return String.format("[D]%s (Due: %s)",super.toString(), dateTimeParser.convertDateToString(this.due));
     }
 }
