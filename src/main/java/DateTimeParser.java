@@ -25,4 +25,8 @@ public class DateTimeParser {
             return null;
         }
     }
+
+    public String convertDateToString(LocalDateTime dateTime) {
+        return dateTime.format(formatter);
+    }
 }
