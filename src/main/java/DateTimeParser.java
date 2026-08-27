@@ -18,15 +18,19 @@ public class DateTimeParser {
         return true;
     }
 
+    public void setFormatter(DateTimeFormatter formatter) {
+        this.formatter = formatter;
+    }
+
     public LocalDateTime parseDateString(String sDatetime) {
         try{
             return LocalDateTime.parse(sDatetime, formatter);
-        } catch (DateTimeParseException e) {
+        } catch (DateTimeParseException | NullPointerException e) {
             return null;
         }
     }
 
     public String convertDateToString(LocalDateTime dateTime) {
-        return dateTime.format(formatter);
+        return dateTime == null ? "unknown" : dateTime.format(formatter);
     }
 }
