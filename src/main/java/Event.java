@@ -2,6 +2,12 @@ public class Event extends Task{
     String start;
     String end;
 
+    public Event(boolean done, String name, String start, String end) throws InvalidTaskException {
+        super(done, name);
+        this.start = start;
+        this.end = end;
+    }
+
     public Event(String name, String start, String end) throws InvalidTaskException {
         super(name);
         this.start = start;
@@ -22,6 +28,18 @@ public class Event extends Task{
 
     public void setEnd(String end) {
         this.end = end;
+    }
+
+    protected String writeToStore() {
+        return String.format("%s%s%s%s%s%s%s",
+                TaskType.EVENT.flag,
+                DATA_SEP,
+                super.writeToStore(),
+                DATA_SEP,
+                this.start,
+                DATA_SEP,
+                this.end
+        );
     }
 
     @Override

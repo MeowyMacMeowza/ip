@@ -1,4 +1,6 @@
-package PACKAGE_NAME;
+import java.io.IOException;
 
-public class Storable {
+public interface Storable<T> {
+    public String writeToString();
+    public boolean readFromParser(StorageParser<? extends Storable<T>> parser) throws IOException;
 }
