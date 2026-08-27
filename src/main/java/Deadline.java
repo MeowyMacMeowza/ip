@@ -1,35 +1,38 @@
-public class Deadline extends Task{
-    String due;
+import java.time.LocalDateTime;
 
-    public Deadline(boolean done, String name, String due) throws InvalidTaskException {
+public class Deadline extends Task{
+    LocalDateTime due;
+
+    public Deadline(boolean done, String name, LocalDateTime due) throws InvalidTaskException {
         super(done, name);
         this.due = due;
     }
 
-    public Deadline(String name, String due) throws InvalidTaskException {
+    public Deadline(String name, LocalDateTime due) throws InvalidTaskException {
         super(name);
         this.due = due;
     }
 
     public Deadline(String name) throws InvalidTaskException {
-        this(name, "unknown");
+        this(name, null);
     }
 
-    public String getDue() {
+    public LocalDateTime getDue() {
         return due;
     }
 
-    public void setDueDate(String due) {
+    public void setDueDate(LocalDateTime due) {
         this.due = due;
     }
 
-    protected String writeToStore() {
+    @Override
+    protected String writeToStore(DateTimeParser dateParser) {
         return String.format("%s%s%s%s%s",
                 TaskType.DEADLINE.flag,
                 DATA_SEP,
-                super.writeToStore(),
+                super.writeToStore(dateParser),
                 DATA_SEP,
-                this.due
+                dateParser.convertDateToString(this.due)
         );
     }
 

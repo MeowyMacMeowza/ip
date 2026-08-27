@@ -7,11 +7,12 @@ public class ToDo extends Task{
         super(name);
     }
 
-    protected String writeToStore() {
+    @Override
+    protected String writeToStore(DateTimeParser dateParser) {
         return String.format("%s%s%s",
                 TaskType.TODO.flag,
                 DATA_SEP,
-                super.writeToStore()
+                super.writeToStore(dateParser)
         );
     }
 

@@ -5,7 +5,8 @@ import java.util.HashMap;
 
 public class Config {
     private enum ConfigType {
-        tasklist_file_path("tasklist.txt");
+        tasklist_file_path("tasklist.txt"),
+        datetime_format("yyyy-MM-dd HHmm");
 
         private String value;
 

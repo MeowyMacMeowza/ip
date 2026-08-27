@@ -1,44 +1,47 @@
-public class Event extends Task{
-    String start;
-    String end;
+import java.time.LocalDateTime;
 
-    public Event(boolean done, String name, String start, String end) throws InvalidTaskException {
+public class Event extends Task{
+    LocalDateTime start;
+    LocalDateTime end;
+
+    public Event(boolean done, String name, LocalDateTime start, LocalDateTime end) throws InvalidTaskException {
         super(done, name);
         this.start = start;
         this.end = end;
     }
 
-    public Event(String name, String start, String end) throws InvalidTaskException {
+    public Event(String name, LocalDateTime start, LocalDateTime end) throws InvalidTaskException {
         super(name);
         this.start = start;
         this.end = end;
     }
 
     public Event(String name) throws InvalidTaskException {
-        this(name, "unknown", "unknown");
+        this(name, null, null);
     }
 
     public String getDuration() {
         return String.format("%s - %s", start, end);
     }
 
-    public void setStart(String start) {
+    public void setStart(LocalDateTime start) {
         this.start = start;
     }
 
-    public void setEnd(String end) {
+    public void setEnd(LocalDateTime end) {
         this.end = end;
     }
 
-    protected String writeToStore() {
+    @Override
+    protected String writeToStore(DateTimeParser dateParser) {
         return String.format("%s%s%s%s%s%s%s",
                 TaskType.EVENT.flag,
                 DATA_SEP,
-                super.writeToStore(),
+                super.writeToStore(dateParser),
                 DATA_SEP,
-                this.start,
+                dateParser.convertDateToString(this.start),
                 DATA_SEP,
-                this.end
+                dateParser.convertDateToString(this.end)
         );
     }
 
