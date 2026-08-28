@@ -21,6 +21,16 @@ public class UI {
         return inputScanner.nextLine().trim();
     }
 
+    public int setMaxLength(int length) {
+        int oldLength = this.maxLength;
+        this.maxLength = length;
+        return oldLength;
+    }
+
+    public int getMaxLength() {
+        return this.maxLength;
+    }
+
     public void say(String msg) {
         if(msg.isEmpty()) {
             System.out.println("> Caw");
@@ -61,7 +71,11 @@ public class UI {
         outputStream.println(newText);
     }
 
-    private void divider() {
+    public void rawPrint(String s) {
+        outputStream.println(s);
+    }
+
+    public void divider() {
         StringBuilder divider = new StringBuilder();
         divider.repeat("_", maxLength);
 

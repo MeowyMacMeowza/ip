@@ -3,10 +3,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.time.format.DateTimeFormatter;
-import java.util.Scanner;
 
 public class Korvus {
-    private static int MAX_LENGTH = 80;
     private static String banner =
             """
               /|
@@ -16,8 +14,7 @@ public class Korvus {
              |_/\\_|____|_|  \\_/  \\__,_|\\___/
             """;
 
-    private Scanner userInput;
-    private PrintStream botOutput;
+    private UI ui;
     private DateTimeParser dateTimeParser;
     private Tasklist tasklist;
     private StorageParser<Tasklist> tasklistParser;
@@ -30,8 +27,7 @@ public class Korvus {
     }
 
     private Korvus(InputStream input, PrintStream output, String storagePath) {
-        this.userInput = new Scanner(input);
-        this.botOutput = output;
+        this.ui = new UI(input, output);
         this.storage = new Storage(storagePath);
     }
 
@@ -44,19 +40,20 @@ public class Korvus {
         if(isActive) throw new RuntimeException("Already Running!");
         else isActive = true;
 
-        say("Loading config file...");
+        ui.say("Loading config file...");
         try {
             this.config = this.storage.readConfigFile();
-            say("Loaded config file!");
+            ui.say("Loaded config file!");
         } catch (FileNotFoundException e) {
             this.config = Config.generateNewConfig();
-            say("Failed to find config file, using default configurations~");
+            ui.say("Failed to find config file, using default configurations~");
         }
 
         // Reading config file
         this.dateTimeParser = new DateTimeParser(
                 DateTimeFormatter.ofPattern(this.config.getValue("datetime_format"))
         );
+        this.ui.setMaxLength(Integer.parseInt(this.config.getValue("commandline_length")));
 
         // Adding Parsers to Storage
         try {
@@ -65,7 +62,7 @@ public class Korvus {
                     this.config.getValue("tasklist_file_path")
             );
         } catch (StorageConflictException e) {
-            say(String.format("""
+            ui.say(String.format("""
                     Warning: Failed to connect parser to tasklist!
                     Tasklist will be empty and cannot be saved to storage.
                     Error: %s""", e.getMessage()));
@@ -78,16 +75,16 @@ public class Korvus {
         try {
             boolean hasErrors = this.tasklist.readFromParser(this.tasklistParser);
             if(hasErrors) {
-                say("Warning: Failed to read some tasks! Tasklist may be missing tasks.");
+                ui.say("Warning: Failed to read some tasks! Tasklist may be missing tasks.");
             }
         } catch (IOException e) {
-            say("Warning: Failed tasklist file! Tasklist will be empty.");
+            ui.say("Warning: Failed tasklist file! Tasklist will be empty.");
         }
-        divider();
+        ui.divider();
 
         this.greet();
         while(isActive) {
-            String userReply = userInput.nextLine().trim();
+            String userReply = ui.listen();
 
             switch (userReply) {
                 case String s when s.matches("(good)?bye( -f)?") -> {
@@ -133,64 +130,56 @@ public class Korvus {
                     deleteTask(sTask);
                 }
                 default -> {
-                    say(userReply.isEmpty() ? "Caw~" : userReply +"~");
-                    divider();
+                    ui.say(userReply.isEmpty() ? "Caw~" : userReply +"~");
+                    ui.divider();
                 }
             }
         }
     }
 
     private void greet() {
-        divider();
-        botOutput.println();
-        botOutput.println(banner);
-        say("Nice to meet you!");
-        say("I am caw-lled Korvus, your personal chatbot for keeping track of shiny things.");
-        say("To get a list of cawmands, tweet 'help'!");
-        divider();
+        ui.divider();
+        ui.rawPrint(banner);
+        ui.say("Nice to meet you!");
+        ui.say("I am caw-lled Korvus, your personal chatbot for keeping track of shiny things.");
+        ui.say("To get a list of cawmands, tweet 'help'!");
+        ui.divider();
     }
 
     private void help() {
-        say("Here are a list of cawmands!\nFor any invalid cawmands, I will simply parrot them back~\n");
-        say("list[s], task[s] - View your tasks.");
-        say("""
+        ui.say("Here are a list of cawmands!\nFor any invalid cawmands, I will simply parrot them back~\n");
+        ui.say("list[s], task[s] - View your tasks.");
+        ui.say("""
                 add task <task> - Adds a task with name <task>.
                 Use the flags -t for a ToDo, -d for a Deadline and -e for an Event.
                  -t <task> : Adds a ToDo Task.
                  -d <task> // <deadline> : Adds a Deadline Task with an (optional) deadline.
                  -e <task> // <start> // <end> : Adds an Event Task with (optional) duration.""");
-        say("add todo <task> - Adds a ToDo Task.");
-        say("add deadline <task> // <deadline> - Adds a Deadline Task with an (optional) deadline.");
-        say("add event <task> // <start> // <end> - Adds an Event Task with (optional) duration.");
-        say("""
+        ui.say("add todo <task> - Adds a ToDo Task.");
+        ui.say("add deadline <task> // <deadline> - Adds a Deadline Task with an (optional) deadline.");
+        ui.say("add event <task> // <start> // <end> - Adds an Event Task with (optional) duration.");
+        ui.say("""
                 do task <q_task> - Marks task with info <q_task> as done.
                 
                 <q_task> is first assumed to be the task id, but if invalid then assumed to be task name.
                 If there are duplicate tasks with the same name, it will only use the first one.""");
-        say("""
+        ui.say("""
                 undo task <q_task> - Marks task with info <q_task> as not done.
                 
                 <q_task> is first assumed to be the task id, but if invalid then assumed to be task name.
                 If there are duplicate tasks with the same name, it will only use the first one.""");
-        say("""
+        ui.say("""
                 delete task <q_task> - Removes task with info <q_task> from the tasklist.
                 
                 <q_task> is first assumed to be the task id, but if invalid then assumed to be task name.
                 If there are duplicate tasks with the same name, it will only use the first one.""");
-        say("bye - Closes the program (goodbye...)");
-        say("help - Hi there! I'm here to help!");
-        divider();
-    }
-
-    private void divider() {
-        StringBuilder divider = new StringBuilder();
-        divider.repeat("_", MAX_LENGTH);
-
-        botOutput.println(divider);
+        ui.say("bye - Closes the program (goodbye...)");
+        ui.say("help - Hi there! I'm here to help!");
+        ui.divider();
     }
 
     private void goodbye(boolean isForced) {
-        say("Saving session information to disk...");
+        ui.say("Saving session information to disk...");
 
         // Only runs when user says bye
         isActive = false;
@@ -201,25 +190,25 @@ public class Korvus {
             storage.saveConfigFile(config);
         } catch (IOException e) {
             if(!isForced) {
-                say(String.format("Failed to save some files!\n%s", e.getMessage()));
-                say("Aborting exit... If you want to force exit, tweet \"goodbye -f\".");
+                ui.say(String.format("Failed to save some files!\n%s", e.getMessage()));
+                ui.say("Aborting exit... If you want to force exit, tweet \"goodbye -f\".");
                 return;
             }
         }
 
-        say("Goodbye! Eagle to see you again!");
-        divider();
+        ui.say("Goodbye! Eagle to see you again!");
+        ui.divider();
     }
 
     private void addTask(String task) {
         try {
             String newTask = tasklist.addTask(task);
-            say(String.format("Added task:\n%d. %s", tasklist.getSize(), newTask));
-            divider();
+            ui.say(String.format("Added task:\n%d. %s", tasklist.getSize(), newTask));
+            ui.divider();
         } catch(InvalidTaskException e) {
-            say("An error occurred while creating task!");
-            say(e.getMessage());
-            divider();
+            ui.say("An error occurred while creating task!");
+            ui.say(e.getMessage());
+            ui.divider();
         }
     }
 
@@ -231,11 +220,11 @@ public class Korvus {
             } else {
                 taskString = tasklist.doTask(sTask);
             }
-            say(String.format("Success! Task has been marked done!\n%s", taskString));
+            ui.say(String.format("Success! Task has been marked done!\n%s", taskString));
         } catch (InvalidTaskException e) {
-            say(String.format("Oh no... Failed to mark task: %s", e.getMessage()));
+            ui.say(String.format("Oh no... Failed to mark task: %s", e.getMessage()));
         }
-        divider();
+        ui.divider();
     }
 
     // Tries to undo task given a name
@@ -247,11 +236,11 @@ public class Korvus {
             } else {
                 taskString = tasklist.undoTask(sTask);
             }
-            say(String.format("Success! Task has been unmarked!\n%s", taskString));
+            ui.say(String.format("Success! Task has been unmarked!\n%s", taskString));
         } catch (InvalidTaskException e) {
-            say(String.format("Oh no... Failed to unmark task: %s", e.getMessage()));
+            ui.say(String.format("Oh no... Failed to unmark task: %s", e.getMessage()));
         }
-        divider();
+        ui.divider();
     }
 
     // Tries to delete task given a name
@@ -263,64 +252,23 @@ public class Korvus {
             } else {
                 taskString = tasklist.deleteTask(sTask);
             }
-            say(String.format("""
+            ui.say(String.format("""
                     Success! Task (%s) has been deleted!
                     Take note that the other tasks may have new indexes now.
                     Do tweet "list" or "task" to view your updated tasklist.""", taskString));
         } catch (InvalidTaskException e) {
-            say(String.format("Oh no... Failed to delete task: %s", e.getMessage()));
+            ui.say(String.format("Oh no... Failed to delete task: %s", e.getMessage()));
         }
-        divider();
+        ui.divider();
     }
 
     private void printTasks() {
         if(tasklist.getSize() == 0) {
-            say("You have no tasks! Caw-ngratulations!");
+            ui.say("You have no tasks! Caw-ngratulations!");
             return;
         }
-        say("Here are your tasks!");
-        say(tasklist.toString());
-        divider();
-    }
-
-    // For formatting
-    private void say(String text) {
-        if(text.isEmpty()) {
-            System.out.println("> Caw");
-            return;
-        }
-
-        int lastSpace = -1, lastLine = -1;
-        StringBuilder newText = new StringBuilder("> ");
-
-        for (int i = 0; i < text.length(); i++) {
-            if(text.charAt(i) == ' ') {
-                lastSpace = i;
-            }
-
-            if(text.charAt(i) == '\n') {
-                newText.append(text, lastLine + 1, i);
-                newText.append("\n  ");
-
-                lastLine = i;
-            }
-
-            //End of line
-            else if(i - lastLine > MAX_LENGTH - 2) {
-                if(lastSpace > lastLine) {
-                    newText.append(text, lastLine + 1, lastSpace);
-                    newText.append("\n  ");
-
-                    lastLine = lastSpace;
-                } else {
-                    newText.append(text, lastLine + 1, lastLine + MAX_LENGTH - 1);
-                    newText.append("\n  ");
-
-                    lastLine += MAX_LENGTH - 2;
-                }
-            }
-        }
-        newText.append(text.substring(lastLine + 1));
-        botOutput.println(newText);
+        ui.say("Here are your tasks!");
+        ui.say(tasklist.toString());
+        ui.divider();
     }
 }
