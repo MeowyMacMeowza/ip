@@ -3,6 +3,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.function.Consumer;
 
 public class Korvus {
     private static String banner =
@@ -15,6 +17,9 @@ public class Korvus {
             """;
 
     private UI ui;
+    private CommandParser parser;
+    private HashMap<String, Consumer<String>> commandMap;
+
     private DateTimeParser dateTimeParser;
     private Tasklist tasklist;
     private StorageParser<Tasklist> tasklistParser;
@@ -29,6 +34,8 @@ public class Korvus {
     private Korvus(InputStream input, PrintStream output, String storagePath) {
         this.ui = new UI(input, output);
         this.storage = new Storage(storagePath);
+        this.parser = new CommandParser();
+        this.commandMap = generateCommandMapping();
     }
 
     public static void main(String[] args) {
@@ -85,55 +92,11 @@ public class Korvus {
         this.greet();
         while(isActive) {
             String userReply = ui.listen();
+            String[] cmd = parser.parse(userReply);
+            String cmdName = cmd[0];
+            String cmdArgs = cmd[1];
 
-            switch (userReply) {
-                case String s when s.matches("(good)?bye( -f)?") -> {
-                    goodbye(s.matches(".*-f.*"));
-                }
-                case "help" -> {
-                    help();
-                }
-                case String s when s.matches("(task(s)?)|(list(s)?)") -> {
-                    printTasks();
-                }
-                // Add Task
-                case String s when s.matches("add task .*") -> {
-                    String sTask = s.split("add task ",2)[1];
-                    addTask(sTask);
-                }
-                // Add Task subclasses
-                case String s when s.matches("(add )?todo .*") -> {
-                    String sTask = "-t " + s.split("(add )?todo ",2)[1];
-                    addTask(sTask);
-                }
-                case String s when s.matches("(add )?deadline .*") -> {
-                    String sTask = "-d " + s.split("(add )?deadline ",2)[1];
-                    addTask(sTask);
-                }
-                case String s when s.matches("(add )?event .*") -> {
-                    String sTask = "-e " + s.split("(add )?event ",2)[1];
-                    addTask(sTask);
-                }
-                // Do Task
-                case String s when s.matches("do(ne)? task .*") -> {
-                    String sTask = s.split("do(ne)? task ",2)[1];
-                    doTask(sTask);
-                }
-                // Undo Task
-                case String s when s.matches("undo(ne)? task .*") -> {
-                    String sTask = s.split("undo(ne)? task ",2)[1];
-                    undoTask(sTask);
-                }
-                // Delete Task
-                case String s when s.matches("del(ete)? task .*") -> {
-                    String sTask = s.split("del(ete)? task ",2)[1];
-                    deleteTask(sTask);
-                }
-                default -> {
-                    ui.say(userReply.isEmpty() ? "Caw~" : userReply +"~");
-                    ui.divider();
-                }
-            }
+            commandMap.get(cmdName).accept(cmdArgs);
         }
     }
 
@@ -146,7 +109,7 @@ public class Korvus {
         ui.divider();
     }
 
-    private void help() {
+    private void help(String input) {
         ui.say("Here are a list of cawmands!\nFor any invalid cawmands, I will simply parrot them back~\n");
         ui.say("list[s], task[s] - View your tasks.");
         ui.say("""
@@ -178,7 +141,7 @@ public class Korvus {
         ui.divider();
     }
 
-    private void goodbye(boolean isForced) {
+    private void goodbye(String forced) {
         ui.say("Saving session information to disk...");
 
         // Only runs when user says bye
@@ -189,7 +152,7 @@ public class Korvus {
             }
             storage.saveConfigFile(config);
         } catch (IOException e) {
-            if(!isForced) {
+            if(forced != null) {
                 ui.say(String.format("Failed to save some files!\n%s", e.getMessage()));
                 ui.say("Aborting exit... If you want to force exit, tweet \"goodbye -f\".");
                 return;
@@ -262,7 +225,7 @@ public class Korvus {
         ui.divider();
     }
 
-    private void printTasks() {
+    private void printTasks(String input) {
         if(tasklist.getSize() == 0) {
             ui.say("You have no tasks! Caw-ngratulations!");
             return;
@@ -270,5 +233,19 @@ public class Korvus {
         ui.say("Here are your tasks!");
         ui.say(tasklist.toString());
         ui.divider();
+    }
+
+    private HashMap<String, Consumer<String>> generateCommandMapping() {
+        HashMap<String, Consumer<String>> commandMap = new HashMap<>();
+        commandMap.put("bye", this::goodbye);
+        commandMap.put("help", this::help);
+        commandMap.put("list", this::printTasks);
+        commandMap.put("add", this::addTask);
+        commandMap.put("do", this::doTask);
+        commandMap.put("undo", this::undoTask);
+        commandMap.put("del", this::deleteTask);
+        commandMap.put("echo", this.ui::say);
+
+        return commandMap;
     }
 }
