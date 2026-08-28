@@ -1,8 +1,14 @@
+package korvus.tasks;
+
+import korvus.storage.Storable;
+import korvus.storage.StorageParser;
+import korvus.utils.DateTimeParser;
+
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-public class Tasklist implements Storable<Tasklist>{
+public class Tasklist implements Storable<Tasklist> {
     private static String TASK_SEP = "<>";
 
     private DateTimeParser dateTimeParser;
@@ -41,7 +47,7 @@ public class Tasklist implements Storable<Tasklist>{
 
         //Failed to find task
         if(id == -1) {
-            throw new InvalidTaskException(String.format("Task cannot be found.\nName: %s", sTask));
+            throw new InvalidTaskException(String.format("korvus.tasks.Task cannot be found.\nName: %s", sTask));
         } else{
             return deleteTask(id);
         }
@@ -61,7 +67,7 @@ public class Tasklist implements Storable<Tasklist>{
 
         //Failed to find task
         if(id == -1) {
-            throw new InvalidTaskException(String.format("Task cannot be found.\nInput: %s", sTask));
+            throw new InvalidTaskException(String.format("korvus.tasks.Task cannot be found.\nInput: %s", sTask));
         } else{
             return doTask(id);
         }
@@ -70,7 +76,7 @@ public class Tasklist implements Storable<Tasklist>{
     public String doTask(int id) throws InvalidTaskException {
         boolean status = tasklist.get(id).doTask();
         if(!status) {
-            throw new InvalidTaskException(String.format("Task has already been done\n%s", tasklist.get(id)));
+            throw new InvalidTaskException(String.format("korvus.tasks.Task has already been done\n%s", tasklist.get(id)));
         }
 
         return tasklist.get(id).toString();
@@ -86,7 +92,7 @@ public class Tasklist implements Storable<Tasklist>{
 
         //Failed to find task
         if(id == -1) {
-            throw new InvalidTaskException(String.format("Task cannot be found.\nName: %s",sTask));
+            throw new InvalidTaskException(String.format("korvus.tasks.Task cannot be found.\nName: %s",sTask));
         } else{
             return undoTask(id);
         }
@@ -95,7 +101,7 @@ public class Tasklist implements Storable<Tasklist>{
     public String undoTask(int id) throws InvalidTaskException{
         boolean status = tasklist.get(id).undoTask();
         if(!status) {
-            throw new InvalidTaskException(String.format("Task has not been done\n%s",tasklist.get(id)));
+            throw new InvalidTaskException(String.format("korvus.tasks.Task has not been done\n%s",tasklist.get(id)));
         }
         return tasklist.get(id).toString();
     };

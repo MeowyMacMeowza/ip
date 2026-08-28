@@ -1,3 +1,7 @@
+package korvus.storage;
+
+import korvus.Config;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -50,7 +54,7 @@ public class Storage {
             BufferedReader reader = new BufferedReader(configFile);
             return Config.readConfigFile(reader);
         } else {
-            // Create new Config to save
+            // Create new korvus.Config to save
             return Config.generateNewConfig();
         }
     }

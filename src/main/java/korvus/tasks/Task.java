@@ -1,4 +1,6 @@
-import java.time.format.DateTimeFormatter;
+package korvus.tasks;
+
+import korvus.utils.DateTimeParser;
 
 public class Task {
     protected enum TaskType {
@@ -26,7 +28,7 @@ public class Task {
     public Task(boolean done, String name, DateTimeParser dateTimeParser) throws InvalidTaskException {
         if(name.startsWith("-")) {
             throw new InvalidTaskException(
-                    "Task name cannot start with '-'! Are you sure that you typed the name correctly?"
+                    "korvus.tasks.Task name cannot start with '-'! Are you sure that you typed the name correctly?"
             );
         }
         this.name = name;
@@ -83,7 +85,7 @@ public class Task {
                 String[] args = s.split(DATA_SEP, 5);
                 yield new Event(Boolean.parseBoolean(args[2]), args[1], args[3], args[4], dateParser);
             }
-            default -> throw new InvalidTaskException(String.format("Task format not supported!\nInput: %s",fileInput));
+            default -> throw new InvalidTaskException(String.format("korvus.tasks.Task format not supported!\nInput: %s",fileInput));
         };
     }
 

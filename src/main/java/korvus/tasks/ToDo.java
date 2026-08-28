@@ -1,3 +1,7 @@
+package korvus.tasks;
+
+import korvus.utils.DateTimeParser;
+
 public class ToDo extends Task{
     public ToDo(boolean done, String name, DateTimeParser dateTimeParser) throws InvalidTaskException {
         super(done, name, dateTimeParser);
