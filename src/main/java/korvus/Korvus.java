@@ -49,7 +49,7 @@ public class Korvus {
     }
 
     public static void main(String[] args) {
-        Korvus bot = new Korvus(System.in, System.out, "");
+        Korvus bot = new Korvus(System.in, System.out, "data/");
         bot.start();
     }
 

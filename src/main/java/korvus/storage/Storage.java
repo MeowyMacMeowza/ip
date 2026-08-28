@@ -23,6 +23,12 @@ public class Storage {
     public Storage(String path) {
         this.relativePath = path;
         this.parserList = new ArrayList<>();
+
+        try {
+            Files.createDirectories(Path.of(relativePath));
+        } catch (IOException e) {
+            return;
+        }
     }
 
     //Read File
@@ -50,7 +56,7 @@ public class Storage {
     //Read Setting?
     public Config readConfigFile() throws FileNotFoundException {
         if(Files.exists(Path.of(relativePath, Config.CONFIG_FILE))) {
-            FileReader configFile = new FileReader(Config.CONFIG_FILE);
+            FileReader configFile = new FileReader(relativePath + Config.CONFIG_FILE);
             BufferedReader reader = new BufferedReader(configFile);
             return Config.readConfigFile(reader);
         } else {
