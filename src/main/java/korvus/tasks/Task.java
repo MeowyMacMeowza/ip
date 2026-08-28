@@ -85,7 +85,7 @@ public class Task {
                 String[] args = s.split(DATA_SEP, 5);
                 yield new Event(Boolean.parseBoolean(args[2]), args[1], args[3], args[4], dateParser);
             }
-            default -> throw new InvalidTaskException(String.format("korvus.tasks.Task format not supported!\nInput: %s",fileInput));
+            default -> throw new InvalidTaskException(String.format("Task format not supported!\nInput: %s",fileInput));
         };
     }
 
