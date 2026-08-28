@@ -1,3 +1,7 @@
+package korvus.tasks;
+
+import korvus.utils.DateTimeParser;
+
 import java.time.LocalDateTime;
 
 public class Event extends Task{

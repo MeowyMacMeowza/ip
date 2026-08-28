@@ -1,3 +1,5 @@
+package korvus;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -6,7 +8,8 @@ import java.util.HashMap;
 public class Config {
     private enum ConfigType {
         tasklist_file_path("tasklist.txt"),
-        datetime_format("yyyy-MM-dd HHmm");
+        datetime_format("yyyy-MM-dd HHmm"),
+        commandline_length("100");
 
         private String value;
 

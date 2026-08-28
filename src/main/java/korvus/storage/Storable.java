@@ -1,3 +1,5 @@
+package korvus.storage;
+
 import java.io.IOException;
 
 public interface Storable<T> {
