@@ -27,7 +27,7 @@ public class Storage {
      * Returns an instance of the object Storage, given the relative path of a folder.
      * This instance of Storage is "bound to" said folder, and any subsequent file read is assumed to be in the folder.
      *
-     * @param path String (relative) path of folder containing files.
+     * @param path (Relative) path of folder containing files.
      */
     public Storage(String path) {
         this.relativePath = path;
@@ -43,7 +43,7 @@ public class Storage {
     /**
      * Returns a BufferedReader object, given the relative path of the file to read.
      *
-     * @param filePath String path of the file, relative to the directory Storage is bound to.
+     * @param filePath Path of the file, relative to the directory Storage is bound to.
      * @return BufferedReader bufferedReader.
      * @throws IOException If file cannot be read for whatever reason.
      */
@@ -55,7 +55,7 @@ public class Storage {
     /**
      * Returns a BufferedWriter object, given the relative path of the file to read.
      *
-     * @param filePath String path of the file, relative to the directory Storage is bound to.
+     * @param filePath Path of the file, relative to the directory Storage is bound to.
      * @return BufferedWriter buffedWriter.
      * @throws IOException If file cannot be written for whatever reason.
      */
@@ -69,7 +69,7 @@ public class Storage {
      * This ensures that there are no conflicting storage parsers (reading the same file),
      * throwing an exception if there are conflicting filePaths.
      *
-     * @param storageParser StorageParser parser to be added to the storage and checked.
+     * @param storageParser StorageParser to be added to the storage and checked.
      * @throws StorageConflictException If there exists another StorageParser that has the same file path.
      */
     public <T extends Storable<T>> void addParser(StorageParser<T> storageParser) throws StorageConflictException {
@@ -97,7 +97,7 @@ public class Storage {
     /**
      * Saves the given Config object to its config file.
      *
-     * @param config Config the Config object to be saved.
+     * @param config Config object to be saved.
      */
     public void saveConfigFile(Config config) throws IOException {
         FileWriter configFile = new FileWriter(relativePath + Config.CONFIG_FILE);
