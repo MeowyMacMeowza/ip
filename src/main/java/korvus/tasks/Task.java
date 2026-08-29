@@ -89,6 +89,11 @@ public class Task {
         };
     }
 
+    /**
+     * Returns the task in a format for writing to a file.
+     *
+     * @return Task as a String to be written to a file.
+     */
     protected String writeToStore() {
         return String.format("%s%s%s",
                 this.name,
@@ -97,6 +102,11 @@ public class Task {
         );
     };
 
+    /**
+     * Returns a String representation of the Task, to be used in the CLI.
+     *
+     * @return Task formatted in a human-readable form.
+     */
     @Override
     public String toString() {
         return String.format("[%s] %s",isDone ? "x" : " ",name);
