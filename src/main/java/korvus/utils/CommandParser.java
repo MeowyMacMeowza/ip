@@ -1,10 +1,20 @@
 package korvus.utils;
 
 public class CommandParser {
+
+    /**
+     * Returns an instance of CommandParser.
+     */
     public CommandParser() {
 
     }
 
+    /**
+     * Returns a String array containing the command name followed by the args passed into it.
+     *
+     * @param input String of the initial input to be processed.
+     * @return the command to run split with its argument.
+     */
     public String[] parse(String input) {
         return switch (input) {
             case String s when s.matches("(good)?bye( -f)?") ->
