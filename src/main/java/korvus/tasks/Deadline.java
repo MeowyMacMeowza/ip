@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 public class Deadline extends Task{
     LocalDateTime due;
 
-    public Deadline(boolean done, String name, String due, DateTimeParser dateTimeParser) throws InvalidTaskException {
-        super(done, name, dateTimeParser);
+    public Deadline(boolean isDone, String name, String due, DateTimeParser dateTimeParser) throws InvalidTaskException {
+        super(isDone, name, dateTimeParser);
         this.due = dateTimeParser.parseDateString(due);
     }
 

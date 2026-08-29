@@ -3,8 +3,8 @@ package korvus.tasks;
 import korvus.utils.DateTimeParser;
 
 public class ToDo extends Task{
-    public ToDo(boolean done, String name, DateTimeParser dateTimeParser) throws InvalidTaskException {
-        super(done, name, dateTimeParser);
+    public ToDo(boolean isDone, String name, DateTimeParser dateTimeParser) throws InvalidTaskException {
+        super(isDone, name, dateTimeParser);
     }
 
     public ToDo(String name, DateTimeParser dateTimeParser) throws InvalidTaskException {
