@@ -8,8 +8,8 @@ public class Event extends Task{
     LocalDateTime start;
     LocalDateTime end;
 
-    public Event(boolean done, String name, String start, String end, DateTimeParser dateTimeParser) throws InvalidTaskException {
-        super(done, name, dateTimeParser);
+    public Event(boolean isDone, String name, String start, String end, DateTimeParser dateTimeParser) throws InvalidTaskException {
+        super(isDone, name, dateTimeParser);
         this.start = dateTimeParser.parseDateString(start);
         this.end = dateTimeParser.parseDateString(end);
     }

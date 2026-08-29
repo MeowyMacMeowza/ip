@@ -25,13 +25,13 @@ public class Task {
         this(false, name, dateTimeParser);
     }
 
-    public Task(boolean done, String name, DateTimeParser dateTimeParser) throws InvalidTaskException {
+    public Task(boolean isDone, String name, DateTimeParser dateTimeParser) throws InvalidTaskException {
         if(name.startsWith("-")) {
             throw new InvalidTaskException
                     ("korvus.tasks.Task name cannot start with '-'! Are you sure that you typed the name correctly?");
         }
         this.name = name;
-        this.isDone = done;
+        this.isDone = isDone;
         this.dateTimeParser = dateTimeParser;
     }
 
