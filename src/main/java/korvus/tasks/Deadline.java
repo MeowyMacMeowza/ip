@@ -36,12 +36,11 @@ public class Deadline extends Task{
                 DATA_SEP,
                 super.writeToStore(),
                 DATA_SEP,
-                dateTimeParser.convertDateToString(this.due)
-        );
+                dateTimeParser.convertDateToString(this.due));
     }
 
     @Override
     public String toString() {
-        return String.format("[D]%s (Due: %s)",super.toString(), dateTimeParser.convertDateToString(this.due));
+        return String.format("[D]%s (Due: %s)", super.toString(), dateTimeParser.convertDateToString(this.due));
     }
 }

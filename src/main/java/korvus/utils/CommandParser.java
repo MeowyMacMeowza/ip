@@ -10,7 +10,7 @@ public class CommandParser {
             case String s when s.matches("(good)?bye( -f)?") ->
                     new String[] { "bye" , s.matches("-f") ? "force" : null };
             case String s when s.matches("help") -> new String[] { "help" , "" };
-            case String s when s.matches("(task(s)?)|(list(s)?)") -> new String[] { "list" , ""};
+            case String s when s.matches("(task(s)?)|(list(s)?)") -> new String[] { "list" , "" };
             // Add korvus.tasks.Task
             case String s when s.matches("add task .*") ->
                     new String[]{ "add", s.split("add task ", 2)[1] };

@@ -16,12 +16,11 @@ public class ToDo extends Task{
         return String.format("%s%s%s",
                 TaskType.TODO.flag,
                 DATA_SEP,
-                super.writeToStore()
-        );
+                super.writeToStore());
     }
 
     @Override
     public String toString() {
-        return String.format("[T]%s",super.toString());
+        return String.format("[T]%s", super.toString());
     }
 }

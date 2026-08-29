@@ -40,7 +40,9 @@ public class Tasklist implements Storable<Tasklist> {
     public String deleteTask(String sTask) throws InvalidTaskException {
         int id = -1;
         for (int i = 0; i < tasklist.size(); i++) {
-            if(!tasklist.get(i).getName().equals(sTask)) continue;
+            if(!tasklist.get(i).getName().equals(sTask)) {
+                continue;
+            }
             id = i;
             break;
         }
@@ -60,7 +62,9 @@ public class Tasklist implements Storable<Tasklist> {
     public String doTask(String sTask) throws InvalidTaskException {
         int id = -1;
         for (int i = 0; i < tasklist.size(); i++) {
-            if(!tasklist.get(i).getName().equals(sTask)) continue;
+            if(!tasklist.get(i).getName().equals(sTask)) {
+                continue;
+            }
             id = i;
             break;
         }
@@ -85,7 +89,9 @@ public class Tasklist implements Storable<Tasklist> {
     public String undoTask(String sTask) throws InvalidTaskException {
         int id = -1;
         for (int i = 0; i < tasklist.size(); i++) {
-            if(!tasklist.get(i).getName().equals(sTask)) continue;
+            if(!tasklist.get(i).getName().equals(sTask)) {
+                continue;
+            }
             id = i;
             break;
         }
@@ -111,7 +117,7 @@ public class Tasklist implements Storable<Tasklist> {
         StringBuilder output = new StringBuilder();
         for (int i = 0; i < tasklist.size(); i++) {
             output.append(tasklist.get(i).writeToStore());
-            if(i+1 != tasklist.size()) {
+            if(i + 1 != tasklist.size()) {
                 output.append(TASK_SEP);
             }
         }
@@ -137,7 +143,7 @@ public class Tasklist implements Storable<Tasklist> {
     public String toString() {
         StringBuilder tasks = new StringBuilder();
         for (int i = 0; i < tasklist.size(); i++) {
-            tasks.append(String.format("%d. %s", i+1, tasklist.get(i)));
+            tasks.append(String.format("%d. %s", i + 1, tasklist.get(i)));
             if(i != tasklist.size() - 1) {
                 tasks.append("\n");
             }

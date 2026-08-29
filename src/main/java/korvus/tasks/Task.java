@@ -27,9 +27,8 @@ public class Task {
 
     public Task(boolean done, String name, DateTimeParser dateTimeParser) throws InvalidTaskException {
         if(name.startsWith("-")) {
-            throw new InvalidTaskException(
-                    "korvus.tasks.Task name cannot start with '-'! Are you sure that you typed the name correctly?"
-            );
+            throw new InvalidTaskException
+                    ("korvus.tasks.Task name cannot start with '-'! Are you sure that you typed the name correctly?");
         }
         this.name = name;
         this.isDone = done;
@@ -37,14 +36,20 @@ public class Task {
     }
 
     public boolean doTask() {
-        if(isDone) return false;
+        if(isDone) {
+            return false;
+        }
         isDone = true;
+
         return true;
     }
 
     public boolean undoTask() {
-        if(!isDone) return false;
+        if(!isDone) {
+            return false;
+        }
         isDone = false;
+
         return true;
     }
 
@@ -59,13 +64,15 @@ public class Task {
             }
             case String s when s.startsWith(TaskType.DEADLINE.flag) -> {
                 String[] args = s.substring(3).split(DATA_SEP, 2);
-                yield args.length > 1 ?
-                        new Deadline(args[0], args[1], dateParser) : new Deadline(args[0], dateParser);
+                yield args.length > 1
+                        ? new Deadline(args[0], args[1], dateParser)
+                        : new Deadline(args[0], dateParser);
             }
             case String s when s.startsWith(TaskType.EVENT.flag) -> {
                 String[] args = s.substring(3).split(DATA_SEP, 3);
-                yield args.length > 2 ?
-                        new Event(args[0], args[1], args[2], dateParser) : new Event(args[0], dateParser);
+                yield args.length > 2
+                        ? new Event(args[0], args[1], args[2], dateParser)
+                        : new Event(args[0], dateParser);
             }
             default -> new ToDo(taskInput, dateParser);
         };
@@ -85,7 +92,9 @@ public class Task {
                 String[] args = s.split(DATA_SEP, 5);
                 yield new Event(Boolean.parseBoolean(args[2]), args[1], args[3], args[4], dateParser);
             }
-            default -> throw new InvalidTaskException(String.format("Task format not supported!\nInput: %s",fileInput));
+            default -> {
+                throw new InvalidTaskException(String.format("Task format not supported!\nInput: %s", fileInput));
+            }
         };
     }
 
@@ -93,12 +102,11 @@ public class Task {
         return String.format("%s%s%s",
                 this.name,
                 DATA_SEP,
-                this.isDone
-        );
+                this.isDone);
     };
 
     @Override
     public String toString() {
-        return String.format("[%s] %s",isDone ? "x" : " ",name);
+        return String.format("[%s] %s",isDone ? "x" : " ", name);
     }
 }

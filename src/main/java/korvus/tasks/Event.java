@@ -27,8 +27,7 @@ public class Event extends Task{
     public String getDuration() {
         return String.format("%s - %s",
                 dateTimeParser.convertDateToString(start),
-                dateTimeParser.convertDateToString(end)
-        );
+                dateTimeParser.convertDateToString(end));
     }
 
     public void setStart(LocalDateTime start) {
@@ -48,12 +47,11 @@ public class Event extends Task{
                 DATA_SEP,
                 dateTimeParser.convertDateToString(this.start),
                 DATA_SEP,
-                dateTimeParser.convertDateToString(this.end)
-        );
+                dateTimeParser.convertDateToString(this.end));
     }
 
     @Override
     public String toString() {
-        return String.format("[E]%s (Duration: %s)",super.toString(), this.getDuration());
+        return String.format("[E]%s (Duration: %s)", super.toString(), this.getDuration());
     }
 }
