@@ -45,7 +45,7 @@ public class Storage {
      *
      * @param filePath String path of the file, relative to the directory Storage is bound to.
      * @return BufferedReader bufferedReader
-     * @throws IOException if file cannot be read for whatever reason
+     * @throws IOException If file cannot be read for whatever reason
      */
     public BufferedReader readFile(String filePath) throws IOException {
         FileReader file = new FileReader(relativePath + filePath);
@@ -57,7 +57,7 @@ public class Storage {
      *
      * @param filePath String path of the file, relative to the directory Storage is bound to.
      * @return BufferedWriter buffedWriter
-     * @throws IOException if file cannot be written for whatever reason
+     * @throws IOException If file cannot be written for whatever reason
      */
     public BufferedWriter writeFile(String filePath) throws IOException {
         FileWriter file = new FileWriter(relativePath + filePath);
@@ -70,7 +70,7 @@ public class Storage {
      * throwing an exception if there are conflicting filePaths.
      *
      * @param storageParser StorageParser parser to be added to the storage and checked
-     * @throws StorageConflictException if there exists another StorageParser that has the same file path
+     * @throws StorageConflictException If there exists another StorageParser that has the same file path
      */
     public <T extends Storable<T>> void addParser(StorageParser<T> storageParser) throws StorageConflictException {
         for (StorageParser<? extends Storable<?>> parser : parserList) {
