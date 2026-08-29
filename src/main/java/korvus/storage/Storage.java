@@ -17,7 +17,7 @@ public class Storage {
     private ArrayList<StorageParser<? extends Storable>> parserList;
 
     /**
-     * Returns an instance of the object Storage
+     * Returns an instance of the object Storage.
      */
     public Storage() {
         this("");
@@ -27,7 +27,7 @@ public class Storage {
      * Returns an instance of the object Storage, given the relative path of a folder.
      * This instance of Storage is "bound to" said folder, and any subsequent file read is assumed to be in the folder.
      *
-     * @param path String (relative) path of folder containing files
+     * @param path String (relative) path of folder containing files.
      */
     public Storage(String path) {
         this.relativePath = path;
@@ -44,8 +44,8 @@ public class Storage {
      * Returns a BufferedReader object, given the relative path of the file to read.
      *
      * @param filePath String path of the file, relative to the directory Storage is bound to.
-     * @return BufferedReader bufferedReader
-     * @throws IOException If file cannot be read for whatever reason
+     * @return BufferedReader bufferedReader.
+     * @throws IOException If file cannot be read for whatever reason.
      */
     public BufferedReader readFile(String filePath) throws IOException {
         FileReader file = new FileReader(relativePath + filePath);
@@ -56,8 +56,8 @@ public class Storage {
      * Returns a BufferedWriter object, given the relative path of the file to read.
      *
      * @param filePath String path of the file, relative to the directory Storage is bound to.
-     * @return BufferedWriter buffedWriter
-     * @throws IOException If file cannot be written for whatever reason
+     * @return BufferedWriter buffedWriter.
+     * @throws IOException If file cannot be written for whatever reason.
      */
     public BufferedWriter writeFile(String filePath) throws IOException {
         FileWriter file = new FileWriter(relativePath + filePath);
@@ -69,8 +69,8 @@ public class Storage {
      * This ensures that there are no conflicting storage parsers (reading the same file),
      * throwing an exception if there are conflicting filePaths.
      *
-     * @param storageParser StorageParser parser to be added to the storage and checked
-     * @throws StorageConflictException If there exists another StorageParser that has the same file path
+     * @param storageParser StorageParser parser to be added to the storage and checked.
+     * @throws StorageConflictException If there exists another StorageParser that has the same file path.
      */
     public <T extends Storable<T>> void addParser(StorageParser<T> storageParser) throws StorageConflictException {
         for (StorageParser<? extends Storable<?>> parser : parserList) {
@@ -86,7 +86,7 @@ public class Storage {
      * Returns a Config object, which contains the configuration settings for Korvus.
      * If the config file cannot be found/read, the default config is generated instead.
      *
-     * @return Config config
+     * @return Config config.
      */
     public Config readConfigFile() throws FileNotFoundException{
         FileReader configFile = new FileReader(relativePath + Config.CONFIG_FILE);
@@ -97,7 +97,7 @@ public class Storage {
     /**
      * Saves the given Config object to its config file.
      *
-     * @param config Config the Config object to be saved
+     * @param config Config the Config object to be saved.
      */
     public void saveConfigFile(Config config) throws IOException {
         FileWriter configFile = new FileWriter(relativePath + Config.CONFIG_FILE);

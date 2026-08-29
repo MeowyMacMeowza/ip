@@ -14,9 +14,9 @@ public interface Storable<T> {
     /**
      * Reads the provided parser and saves its data in itself.
      *
-     * @param parser StorageParser StorageParser that contains the information needed to read the file
-     * @return Boolean boolean on whether the reading process had any errors
-     * @throws IOException If there is any error reading the file (with the parser)
+     * @param parser StorageParser StorageParser that contains the information needed to read the file.
+     * @return Boolean boolean on whether the reading process had any errors.
+     * @throws IOException If there is any error reading the file (with the parser).
      */
     public boolean readFromParser(StorageParser<? extends Storable<T>> parser) throws IOException;
 }
