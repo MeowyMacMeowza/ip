@@ -37,10 +37,20 @@ public class Korvus {
     private Config config;
     private boolean isActive;
 
+    /**
+     * Returns a default instance of the Korvus object.
+     */
     private Korvus() {
         this(System.in, System.out, "");
     }
 
+    /**
+     * Returns an instance of the Korvus object, with the provided parameters.
+     *
+     * @param input Input Stream that user inputs from.
+     * @param output Output Stream that Korvus writes to.
+     * @param storagePath Relative path to the directory with files for Korvus to use.
+     */
     private Korvus(InputStream input, PrintStream output, String storagePath) {
         this.ui = new UI(input, output);
         this.storage = new Storage(storagePath);
@@ -48,11 +58,17 @@ public class Korvus {
         this.commandMap = generateCommandMapping();
     }
 
+    /**
+     * Creates the Korvus bot and starts it.
+     */
     public static void main(String[] args) {
         Korvus bot = new Korvus(System.in, System.out, "data/");
         bot.start();
     }
 
+    /**
+     * Starts the Korvus bot.
+     */
     private void start() {
         if(isActive) throw new RuntimeException("Already Running!");
         else isActive = true;
@@ -110,6 +126,9 @@ public class Korvus {
         }
     }
 
+    /**
+     * Writes a greeting to the UI.
+     */
     private void greet() {
         ui.divider();
         ui.rawPrint(banner);
@@ -119,6 +138,9 @@ public class Korvus {
         ui.divider();
     }
 
+    /**
+     * Writes a list of functions that the bot can do, with detailed explanations
+     */
     private void help(String input) {
         ui.say("Here are a list of cawmands!\nFor any invalid cawmands, I will simply parrot them back~\n");
         ui.say("list[s], task[s] - View your tasks.");
@@ -151,6 +173,11 @@ public class Korvus {
         ui.divider();
     }
 
+    /**
+     * Stops the bot.
+     *
+     * @param forced If null, forces the bot to stop regardless whether its data can be saved to Storage.
+     */
     private void goodbye(String forced) {
         ui.say("Saving session information to disk...");
 
@@ -173,6 +200,11 @@ public class Korvus {
         ui.divider();
     }
 
+    /**
+     * Adds a task to the bot.
+     *
+     * @param task String containing data of Task to be saved.
+     */
     private void addTask(String task) {
         try {
             String newTask = tasklist.addTask(task);
@@ -185,6 +217,11 @@ public class Korvus {
         }
     }
 
+    /**
+     * Marks a task in the bot as done.
+     *
+     * @param sTask String containing data of Task to be marked as done.
+     */
     private void doTask(String sTask) {
         try {
             String taskString;
@@ -200,7 +237,11 @@ public class Korvus {
         ui.divider();
     }
 
-    // Tries to undo task given a name
+    /**
+     * Marks a task in the bot as not done.
+     *
+     * @param sTask String containing data of Task to be marked as not done.
+     */
     private void undoTask(String sTask) {
         try {
             String taskString;
@@ -216,7 +257,11 @@ public class Korvus {
         ui.divider();
     }
 
-    // Tries to delete task given a name
+    /**
+     * Deletes a task in the bot.
+     *
+     * @param sTask String containing data of Task to be deleted.
+     */
     private void deleteTask(String sTask) {
         try {
             String taskString;
@@ -235,6 +280,9 @@ public class Korvus {
         ui.divider();
     }
 
+    /**
+     * Prints all the tasks in the bot.
+     */
     private void printTasks(String input) {
         if(tasklist.getSize() == 0) {
             ui.say("You have no tasks! Caw-ngratulations!");
@@ -245,6 +293,12 @@ public class Korvus {
         ui.divider();
     }
 
+    /**
+     * Returns a HashMap of certain keywords to functions.
+     * This allows the bot to offload user input parsing into another file.
+     *
+     * @return HashMap containing mappings of String to Consumers in the bot.
+     */
     private HashMap<String, Consumer<String>> generateCommandMapping() {
         HashMap<String, Consumer<String>> commandMap = new HashMap<>();
         commandMap.put("bye", this::goodbye);

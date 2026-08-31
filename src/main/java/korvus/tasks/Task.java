@@ -21,10 +21,25 @@ public class Task {
     private boolean isDone;
     private String name;
 
+    /**
+     * Returns an instance of Task.
+     *
+     * @param name Name of Task.
+     * @param dateTimeParser Parser for converting String to DateTime.
+     * @throws InvalidTaskException If there is any errors in the above parameters for creating a task.
+     */
     public Task(String name, DateTimeParser dateTimeParser) throws InvalidTaskException {
         this(false, name, dateTimeParser);
     }
 
+    /**
+     * Returns an instance of Task.
+     *
+     * @param isDone Boolean on whether task is completed.
+     * @param name Name of Task.
+     * @param dateTimeParser Parser for converting String to DateTime.
+     * @throws InvalidTaskException If there is any errors in the above parameters for creating a task.
+     */
     public Task(boolean isDone, String name, DateTimeParser dateTimeParser) throws InvalidTaskException {
         if(name.startsWith("-")) {
             throw new InvalidTaskException
@@ -35,6 +50,11 @@ public class Task {
         this.dateTimeParser = dateTimeParser;
     }
 
+    /**
+     * Marks the task as done.
+     *
+     * @return whether the task is already done before this.
+     */
     public boolean doTask() {
         if(isDone) {
             return false;
@@ -44,6 +64,11 @@ public class Task {
         return true;
     }
 
+    /**
+     * Marks the task as not done.
+     *
+     * @return whether the task was not done before this.
+     */
     public boolean undoTask() {
         if(!isDone) {
             return false;
@@ -53,10 +78,22 @@ public class Task {
         return true;
     }
 
+    /**
+     * Returns the name of the task.
+     *
+     * @return the task name.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns an instance of a Task, given an input with parameters.
+     *
+     * @param taskInput String of the input command, without any processing.
+     * @param dateParser Custom parser to convert String to DateTime and vice-versa.
+     * @return a task after parsing the input command.
+     */
     public static Task generateTask(String taskInput, DateTimeParser dateParser) throws InvalidTaskException {
         return switch (taskInput) {
             case String s when s.startsWith(TaskType.TODO.flag) -> {
@@ -78,6 +115,13 @@ public class Task {
         };
     }
 
+    /**
+     * Returns an instance of a Task, given an input from a file.
+     *
+     * @param fileInput String of the input command, without any processing.
+     * @param dateParser Custom parser to convert String to DateTime and vice-versa.
+     * @return a task after parsing the input command.
+     */
     protected static Task readTaskFromFile(String fileInput, DateTimeParser dateParser) throws InvalidTaskException {
         return switch (fileInput) {
             case String s when s.startsWith(TaskType.TODO.flag) -> {
@@ -98,6 +142,11 @@ public class Task {
         };
     }
 
+    /**
+     * Returns the task in a format for writing to a file.
+     *
+     * @return Task as a String to be written to a file.
+     */
     protected String writeToStore() {
         return String.format("%s%s%s",
                 this.name,
@@ -105,6 +154,11 @@ public class Task {
                 this.isDone);
     };
 
+    /**
+     * Returns a String representation of the Task, to be used in the CLI.
+     *
+     * @return Task formatted in a human-readable form.
+     */
     @Override
     public String toString() {
         return String.format("[%s] %s",isDone ? "x" : " ", name);

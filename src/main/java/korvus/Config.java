@@ -21,19 +21,40 @@ public class Config {
     public static final String CONFIG_FILE = "korvus.config"; //Using Hashmap
 
     private HashMap<String, String> configMap;
-    
+
+    /**
+     * Returns an instance of a Config object.
+     */
     private Config() {
         this.configMap = new HashMap<>();
     }
 
+    /**
+     * Returns the value corresponding to the provided config name.
+     *
+     * @param configName The config name to be searched.
+     * @return String value of the config name.
+     */
     public String getValue(String configName) {
         return configMap.get(configName);
     }
 
+    /**
+     * Sets the config name to the corresponding config value.
+     *
+     * @param configName The config name to be edited.
+     * @param configValue The config value to be added.
+     * @return String value of the previous config value (if any).
+     */
     public String setValue(String configName, String configValue) {
         return configMap.put(configName, configValue);
     }
 
+    /**
+     * Generates a new Config object with default values.
+     *
+     * @return Config object with default values.
+     */
     public static Config generateNewConfig() {
         Config newConfig = new Config();
 
@@ -44,6 +65,14 @@ public class Config {
         return newConfig;
     }
 
+    /**
+     * Returns the Config object from reading from the provided reader.
+     * If there are any missing values in said Config object,
+     * adds the default values into the Config object instead.
+     *
+     * @param br BufferedReader pointing to the Config file to be read.
+     * @return Config object with default values.
+     */
     public static Config readConfigFile(BufferedReader br) {
         Config config = new Config();
         br.lines()
@@ -60,6 +89,11 @@ public class Config {
         return config;
     }
 
+    /**
+     * Saves the Config object into a file.
+     *
+     * @param bw BufferedWriter pointing to the Config file to write to.
+     */
     public void saveConfigFile(BufferedWriter bw) throws IOException {
         StringBuilder output = new StringBuilder();
         for(String key : configMap.keySet()) {
