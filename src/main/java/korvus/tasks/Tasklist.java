@@ -106,6 +106,21 @@ public class Tasklist implements Storable<Tasklist> {
         return tasklist.get(id).toString();
     };
 
+    public String findTask(String keyWord) {
+        StringBuilder stringBuilder = new StringBuilder();
+        String searchPattern = ".*("+keyWord+").*";
+        for (int i = 0; i < tasklist.size(); i++) {
+            if(tasklist.get(i).getName().matches(searchPattern)) {
+                if(!stringBuilder.isEmpty()) {
+                    stringBuilder.append('\n');
+                }
+                stringBuilder.append(String.format("%d. %s", i, tasklist.get(i)));
+            }
+        }
+
+        return stringBuilder.toString();
+    }
+
     @Override
     public String writeToString() {
         StringBuilder output = new StringBuilder();
