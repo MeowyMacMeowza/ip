@@ -14,29 +14,63 @@ public class Tasklist implements Storable<Tasklist> {
     private DateTimeParser dateTimeParser;
     private ArrayList<Task> tasklist;
 
+    /**
+     * Returns an instance of tasklist.
+     *
+     * @param dateTimeParser DateTimeParser that should be used for datetime formatting.
+     */
     public Tasklist(DateTimeParser dateTimeParser) {
         tasklist = new ArrayList<>();
         this.dateTimeParser = dateTimeParser;
     }
 
+    /**
+     * Returns a default instance of tasklist.
+     */
     public Tasklist() {
         this(new DateTimeParser(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
     }
 
+    /**
+     * Returns the total number of tasks.
+     *
+     * @return Size of the tasklist.
+     */
     public int getSize() {
         return tasklist.size();
     }
 
+    /**
+     * Returns the index of the queried Task.
+     * This assumes that the task is in the tasklist.
+     *
+     * @param task Task to be found.
+     * @return Index of the task in the tasklist.
+     */
     public int getIndex(Task task) {
         return tasklist.indexOf(task);
     }
 
+    /**
+     * Adds the task into the tasklist.
+     *
+     * @param task Task data to be added.
+     * @return String representation of the new Task in the tasklist.
+     * @throws InvalidTaskException If the task data provided is invalid.
+     */
     public String addTask(String task) throws InvalidTaskException {
         Task newTask = Task.generateTask(task, dateTimeParser);
         tasklist.add(newTask);
         return newTask.toString();
     }
 
+    /**
+     * Removes the task from the tasklist.
+     *
+     * @param sTask Task data to be deleted.
+     * @return String representation of the deleted Task in the tasklist.
+     * @throws InvalidTaskException If the task data provided is invalid.
+     */
     public String deleteTask(String sTask) throws InvalidTaskException {
         int id = -1;
         for (int i = 0; i < tasklist.size(); i++) {
@@ -55,10 +89,23 @@ public class Tasklist implements Storable<Tasklist> {
         }
     };
 
+    /**
+     * Removes the task from the tasklist.
+     *
+     * @param id Task index to be deleted.
+     * @return String representation of the deleted Task in the tasklist.
+     */
     public String deleteTask(int id) {
         return tasklist.remove(id).toString();
     };
 
+    /**
+     * Marks the task from the tasklist as done.
+     *
+     * @param sTask Task data to be marked as done.
+     * @return String representation of the Task provided in the tasklist after marking.
+     * @throws InvalidTaskException If the task is already marked as done.
+     */
     public String doTask(String sTask) throws InvalidTaskException {
         int id = -1;
         for (int i = 0; i < tasklist.size(); i++) {
@@ -77,6 +124,13 @@ public class Tasklist implements Storable<Tasklist> {
         }
     };
 
+    /**
+     * Marks the task from the tasklist as done.
+     *
+     * @param id Index of task to be marked as done.
+     * @return String representation of the Task provided in the tasklist after marking.
+     * @throws InvalidTaskException If the task is already marked as done.
+     */
     public String doTask(int id) throws InvalidTaskException {
         boolean status = tasklist.get(id).doTask();
         if(!status) {
@@ -86,6 +140,13 @@ public class Tasklist implements Storable<Tasklist> {
         return tasklist.get(id).toString();
     };
 
+    /**
+     * Marks the task from the tasklist as not done.
+     *
+     * @param sTask Task data to be marked as not done.
+     * @return String representation of the Task provided in the tasklist after marking.
+     * @throws InvalidTaskException If the task is already marked as not done.
+     */
     public String undoTask(String sTask) throws InvalidTaskException {
         int id = -1;
         for (int i = 0; i < tasklist.size(); i++) {
@@ -104,6 +165,13 @@ public class Tasklist implements Storable<Tasklist> {
         }
     };
 
+    /**
+     * Marks the task from the tasklist as not done.
+     *
+     * @param id Index of task to be marked as not done.
+     * @return String representation of the Task provided in the tasklist after marking.
+     * @throws InvalidTaskException If the task is already marked as not done.
+     */
     public String undoTask(int id) throws InvalidTaskException{
         boolean status = tasklist.get(id).undoTask();
         if(!status) {
@@ -112,6 +180,17 @@ public class Tasklist implements Storable<Tasklist> {
         return tasklist.get(id).toString();
     };
 
+    /**
+     * Finds tasks in the bot given a query.
+     *
+     * @param input String containing keyword to search.
+     */
+    /**
+     * Finds tasks in the tasklist given a query.
+     *
+     * @param keyWord Keyword to search in the tasklist.
+     * @return String representation of a list of Tasks that satisfy the provided keyword.
+     */
     public String findTask(String keyWord) {
         StringBuilder stringBuilder = new StringBuilder();
         String searchPattern = ".*("+keyWord+").*";
@@ -120,7 +199,7 @@ public class Tasklist implements Storable<Tasklist> {
                 if(!stringBuilder.isEmpty()) {
                     stringBuilder.append('\n');
                 }
-                stringBuilder.append(String.format("%d. %s", i, tasklist.get(i)));
+                stringBuilder.append(String.format("%d. %s", i + 1, tasklist.get(i)));
             }
         }
 
