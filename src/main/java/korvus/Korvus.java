@@ -285,7 +285,12 @@ public class Korvus {
         ui.divider();
     }
 
-    private void findTask(String input) {
+    /**
+     * Finds tasks in the bot given a query.
+     *
+     * @param input String containing keyword to search.
+     */
+    private void findTasks(String input) {
         String output = tasklist.findTask(input);
         if(output.isEmpty()) {
             ui.say("No task matches your query: " + input);
@@ -324,7 +329,7 @@ public class Korvus {
         commandMap.put("do", this::doTask);
         commandMap.put("undo", this::undoTask);
         commandMap.put("del", this::deleteTask);
-        commandMap.put("find", this::findTask);
+        commandMap.put("find", this::findTasks);
         commandMap.put("echo", this.ui::say);
 
         return commandMap;
