@@ -117,6 +117,9 @@ public class UI {
         outputStream.println(s);
     }
 
+    /**
+     * Prints a divider line into the output stream.
+     */
     public void divider() {
         StringBuilder divider = new StringBuilder();
         divider.repeat("_", maxLength);
