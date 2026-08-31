@@ -146,6 +146,11 @@ public class Korvus {
                 
                 <q_task> is first assumed to be the task id, but if invalid then assumed to be task name.
                 If there are duplicate tasks with the same name, it will only use the first one.""");
+        ui.say("""
+                find task <f_task> - Finds all tasks with <f_task> as part of the name from the tasklist.
+                
+                <f_task> can be any part of the name, but cannot be separated in any ways.
+                There may be regex that you may be able to apply...""");
         ui.say("bye - Closes the program (goodbye...)");
         ui.say("help - Hi there! I'm here to help!");
         ui.divider();
@@ -235,6 +240,17 @@ public class Korvus {
         ui.divider();
     }
 
+    private void findTask(String input) {
+        String output = tasklist.findTask(input);
+        if(output.isEmpty()) {
+            ui.say("No task matches your query: " + input);
+        } else {
+            ui.say("There are task(s) matching your query!");
+            ui.say(output);
+        }
+        ui.divider();
+    }
+
     private void printTasks(String input) {
         if(tasklist.getSize() == 0) {
             ui.say("You have no tasks! Caw-ngratulations!");
@@ -254,6 +270,7 @@ public class Korvus {
         commandMap.put("do", this::doTask);
         commandMap.put("undo", this::undoTask);
         commandMap.put("del", this::deleteTask);
+        commandMap.put("find", this::findTask);
         commandMap.put("echo", this.ui::say);
 
         return commandMap;

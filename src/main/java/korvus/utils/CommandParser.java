@@ -30,6 +30,9 @@ public class CommandParser {
             // Delete korvus.tasks.Task
             case String s when s.matches("del(ete)? task .*") ->
                     new String[] { "del", s.split("del(ete)? task ", 2)[1] };
+            // Delete korvus.tasks.Task
+            case String s when s.matches("find task .*") ->
+                    new String[] { "find", s.split("find task ", 2)[1] };
             default -> new String[] { "echo", input.isEmpty() ? "Caw~" : input + "~" };
         };
     }
