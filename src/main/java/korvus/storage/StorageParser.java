@@ -4,6 +4,11 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
+/**
+ * Parser to reading and writing to storage.
+ * Each instance is specialised for a specific Storable.
+ * @param <T> Storable to be specialised for.
+ */
 public class StorageParser<T extends Storable<T>> {
     private Storage storage;
     private String filePath;

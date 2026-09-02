@@ -2,6 +2,10 @@ package korvus.storage;
 
 import java.io.IOException;
 
+/**
+ * Interface with Generics for marking an object to be able to be saved to file.
+ * @param <T> Generic referring to the storable object.
+ */
 public interface Storable<T> {
 
     /**

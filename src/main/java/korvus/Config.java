@@ -5,6 +5,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.HashMap;
 
+/**
+ * Contains the configuration setting for the bot.
+ */
 public class Config {
     private enum ConfigType {
         tasklist_file_path("tasklist.txt"),
@@ -81,7 +84,7 @@ public class Config {
                 .forEach(arr -> config.configMap.put(arr[0], arr[1]));
 
         for (ConfigType ct : ConfigType.values()) {
-            if(!config.configMap.containsKey(ct.toString())) {
+            if (!config.configMap.containsKey(ct.toString())) {
                 config.configMap.put(ct.toString(), ct.value);
             }
         }
@@ -96,8 +99,8 @@ public class Config {
      */
     public void saveConfigFile(BufferedWriter bw) throws IOException {
         StringBuilder output = new StringBuilder();
-        for(String key : configMap.keySet()) {
-            if(!output.isEmpty()) {
+        for (String key : configMap.keySet()) {
+            if (!output.isEmpty()) {
                 output.append('\n');
             }
             output.append(key);

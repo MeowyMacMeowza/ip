@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * A Parser to convert between String and LocalDateTime.
+ */
 public class DateTimeParser {
     private DateTimeFormatter formatter;
 
@@ -12,7 +15,7 @@ public class DateTimeParser {
      *
      * @param formatter DateTimeFormat for displaying and parsing Strings.
      */
-    public DateTimeParser (DateTimeFormatter formatter) {
+    public DateTimeParser(DateTimeFormatter formatter) {
         this.formatter = formatter;
     }
 
@@ -23,7 +26,7 @@ public class DateTimeParser {
      * @return Boolean whether the input is in the correct format.
      */
     public boolean isValid(String sDatetime) {
-        try{
+        try {
             formatter.parse(sDatetime);
         } catch (DateTimeParseException e) {
             return false;
@@ -48,7 +51,7 @@ public class DateTimeParser {
      * @return LocalDateTime object corresponding to the aforementioned String.
      */
     public LocalDateTime parseDateString(String sDatetime) {
-        try{
+        try {
             return LocalDateTime.parse(sDatetime, formatter);
         } catch (DateTimeParseException | NullPointerException e) {
             return null;

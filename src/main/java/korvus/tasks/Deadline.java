@@ -1,12 +1,14 @@
 package korvus.tasks;
 
-import korvus.storage.StorageConflictException;
-import korvus.utils.DateTimeParser;
-
 import java.time.LocalDateTime;
 
-public class Deadline extends Task{
-    LocalDateTime due;
+import korvus.utils.DateTimeParser;
+
+/**
+ * Subclass of task, contains due date.
+ */
+public class Deadline extends Task {
+    private LocalDateTime due;
 
     /**
      * Returns an instance of the Deadline, a subclass of Task.
@@ -17,7 +19,8 @@ public class Deadline extends Task{
      * @param dateTimeParser Parser for converting String to DateTime.
      * @throws InvalidTaskException If there is any errors in the above parameters for creating a task.
      */
-    public Deadline(boolean isDone, String name, String due, DateTimeParser dateTimeParser) throws InvalidTaskException {
+    public Deadline(boolean isDone, String name, String due,
+                    DateTimeParser dateTimeParser) throws InvalidTaskException {
         super(isDone, name, dateTimeParser);
         this.due = dateTimeParser.parseDateString(due);
     }

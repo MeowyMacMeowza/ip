@@ -1,13 +1,17 @@
 package korvus.tasks;
 
-import korvus.storage.Storable;
-import korvus.storage.StorageParser;
-import korvus.utils.DateTimeParser;
-
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import korvus.storage.Storable;
+import korvus.storage.StorageParser;
+import korvus.utils.DateTimeParser;
+
+/**
+ * Tasklist for tracking all tasks and performing task operations.
+ * Able to store information to a file.
+ */
 public class Tasklist implements Storable<Tasklist> {
     private static String TASK_SEP = "<>";
 
@@ -74,7 +78,7 @@ public class Tasklist implements Storable<Tasklist> {
     public String deleteTask(String sTask) throws InvalidTaskException {
         int id = -1;
         for (int i = 0; i < tasklist.size(); i++) {
-            if(!tasklist.get(i).getName().equals(sTask)) {
+            if (!tasklist.get(i).getName().equals(sTask)) {
                 continue;
             }
             id = i;
@@ -82,9 +86,9 @@ public class Tasklist implements Storable<Tasklist> {
         }
 
         //Failed to find task
-        if(id == -1) {
+        if (id == -1) {
             throw new InvalidTaskException(String.format("Task cannot be found.\nName: %s", sTask));
-        } else{
+        } else {
             return deleteTask(id);
         }
     };
@@ -99,6 +103,7 @@ public class Tasklist implements Storable<Tasklist> {
         return tasklist.remove(id).toString();
     };
 
+
     /**
      * Marks the task from the tasklist as done.
      *
@@ -109,7 +114,7 @@ public class Tasklist implements Storable<Tasklist> {
     public String doTask(String sTask) throws InvalidTaskException {
         int id = -1;
         for (int i = 0; i < tasklist.size(); i++) {
-            if(!tasklist.get(i).getName().equals(sTask)) {
+            if (!tasklist.get(i).getName().equals(sTask)) {
                 continue;
             }
             id = i;
@@ -117,9 +122,9 @@ public class Tasklist implements Storable<Tasklist> {
         }
 
         //Failed to find task
-        if(id == -1) {
+        if (id == -1) {
             throw new InvalidTaskException(String.format("Task cannot be found.\nInput: %s", sTask));
-        } else{
+        } else {
             return doTask(id);
         }
     };
@@ -133,7 +138,7 @@ public class Tasklist implements Storable<Tasklist> {
      */
     public String doTask(int id) throws InvalidTaskException {
         boolean status = tasklist.get(id).doTask();
-        if(!status) {
+        if (!status) {
             throw new InvalidTaskException(String.format("Task has already been done\n%s", tasklist.get(id)));
         }
 
@@ -150,7 +155,7 @@ public class Tasklist implements Storable<Tasklist> {
     public String undoTask(String sTask) throws InvalidTaskException {
         int id = -1;
         for (int i = 0; i < tasklist.size(); i++) {
-            if(!tasklist.get(i).getName().equals(sTask)) {
+            if (!tasklist.get(i).getName().equals(sTask)) {
                 continue;
             }
             id = i;
@@ -158,9 +163,9 @@ public class Tasklist implements Storable<Tasklist> {
         }
 
         //Failed to find task
-        if(id == -1) {
-            throw new InvalidTaskException(String.format("Task cannot be found.\nName: %s",sTask));
-        } else{
+        if (id == -1) {
+            throw new InvalidTaskException(String.format("Task cannot be found.\nName: %s", sTask));
+        } else {
             return undoTask(id);
         }
     };
@@ -172,19 +177,14 @@ public class Tasklist implements Storable<Tasklist> {
      * @return String representation of the Task provided in the tasklist after marking.
      * @throws InvalidTaskException If the task is already marked as not done.
      */
-    public String undoTask(int id) throws InvalidTaskException{
+    public String undoTask(int id) throws InvalidTaskException {
         boolean status = tasklist.get(id).undoTask();
-        if(!status) {
-            throw new InvalidTaskException(String.format("Task has not been done\n%s",tasklist.get(id)));
+        if (!status) {
+            throw new InvalidTaskException(String.format("Task has not been done\n%s", tasklist.get(id)));
         }
         return tasklist.get(id).toString();
     };
 
-    /**
-     * Finds tasks in the bot given a query.
-     *
-     * @param input String containing keyword to search.
-     */
     /**
      * Finds tasks in the tasklist given a query.
      *
@@ -193,10 +193,10 @@ public class Tasklist implements Storable<Tasklist> {
      */
     public String findTask(String keyWord) {
         StringBuilder stringBuilder = new StringBuilder();
-        String searchPattern = ".*("+keyWord+").*";
+        String searchPattern = ".*(" + keyWord + ").*";
         for (int i = 0; i < tasklist.size(); i++) {
-            if(tasklist.get(i).getName().matches(searchPattern)) {
-                if(!stringBuilder.isEmpty()) {
+            if (tasklist.get(i).getName().matches(searchPattern)) {
+                if (!stringBuilder.isEmpty()) {
                     stringBuilder.append('\n');
                 }
                 stringBuilder.append(String.format("%d. %s", i + 1, tasklist.get(i)));
@@ -211,7 +211,7 @@ public class Tasklist implements Storable<Tasklist> {
         StringBuilder output = new StringBuilder();
         for (int i = 0; i < tasklist.size(); i++) {
             output.append(tasklist.get(i).writeToStore());
-            if(i + 1 != tasklist.size()) {
+            if (i + 1 != tasklist.size()) {
                 output.append(TASK_SEP);
             }
         }
@@ -222,7 +222,7 @@ public class Tasklist implements Storable<Tasklist> {
     public boolean readFromParser(StorageParser<? extends Storable<Tasklist>> parser) throws IOException {
         boolean hasErrors = false;
 
-        for(String sTask : parser.readStorage().split(TASK_SEP)) {
+        for (String sTask : parser.readStorage().split(TASK_SEP)) {
             try {
                 tasklist.add(Task.readTaskFromFile(sTask, dateTimeParser));
             } catch (InvalidTaskException | IndexOutOfBoundsException e) {
@@ -238,7 +238,7 @@ public class Tasklist implements Storable<Tasklist> {
         StringBuilder tasks = new StringBuilder();
         for (int i = 0; i < tasklist.size(); i++) {
             tasks.append(String.format("%d. %s", i + 1, tasklist.get(i)));
-            if(i != tasklist.size() - 1) {
+            if (i != tasklist.size() - 1) {
                 tasks.append("\n");
             }
         }
