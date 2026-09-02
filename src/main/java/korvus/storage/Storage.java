@@ -1,17 +1,20 @@
 package korvus.storage;
 
-import korvus.Config;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+import korvus.Config;
+
+/**
+ * Storage class as a controller for storage operations.
+ */
 public class Storage {
     private String relativePath;
     private ArrayList<StorageParser<? extends Storable>> parserList;
@@ -88,7 +91,7 @@ public class Storage {
      *
      * @return Config config.
      */
-    public Config readConfigFile() throws FileNotFoundException{
+    public Config readConfigFile() throws FileNotFoundException {
         FileReader configFile = new FileReader(relativePath + Config.CONFIG_FILE);
         BufferedReader reader = new BufferedReader(configFile);
         return Config.readConfigFile(reader);

@@ -2,6 +2,9 @@ package korvus.tasks;
 
 import korvus.utils.DateTimeParser;
 
+/**
+ * Task containing the task name and its done state.
+ */
 public class Task {
     protected enum TaskType {
         TODO("-t "),
@@ -41,9 +44,9 @@ public class Task {
      * @throws InvalidTaskException If there is any errors in the above parameters for creating a task.
      */
     public Task(boolean isDone, String name, DateTimeParser dateTimeParser) throws InvalidTaskException {
-        if(name.startsWith("-")) {
-            throw new InvalidTaskException
-                    ("korvus.tasks.Task name cannot start with '-'! Are you sure that you typed the name correctly?");
+        if (name.startsWith("-")) {
+            throw new InvalidTaskException(
+                    "korvus.tasks.Task name cannot start with '-'! Are you sure that you typed the name correctly?");
         }
         this.name = name;
         this.isDone = isDone;
@@ -56,7 +59,7 @@ public class Task {
      * @return whether the task is already done before this.
      */
     public boolean doTask() {
-        if(isDone) {
+        if (isDone) {
             return false;
         }
         isDone = true;
@@ -70,7 +73,7 @@ public class Task {
      * @return whether the task was not done before this.
      */
     public boolean undoTask() {
-        if(!isDone) {
+        if (!isDone) {
             return false;
         }
         isDone = false;
@@ -125,7 +128,7 @@ public class Task {
     protected static Task readTaskFromFile(String fileInput, DateTimeParser dateParser) throws InvalidTaskException {
         return switch (fileInput) {
             case String s when s.startsWith(TaskType.TODO.flag) -> {
-                String[] args = s.split(DATA_SEP,3);
+                String[] args = s.split(DATA_SEP, 3);
                 yield new ToDo(Boolean.parseBoolean(args[2]), args[1], dateParser);
             }
             case String s when s.startsWith(TaskType.DEADLINE.flag) -> {
@@ -161,6 +164,6 @@ public class Task {
      */
     @Override
     public String toString() {
-        return String.format("[%s] %s",isDone ? "x" : " ", name);
+        return String.format("[%s] %s", isDone ? "x" : " ", name);
     }
 }

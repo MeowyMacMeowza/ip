@@ -4,6 +4,9 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
 
+/**
+ * UI class for reading user inputs and writing bot replies.
+ */
 public class UI {
     private Scanner inputScanner;
     private PrintStream outputStream;
@@ -69,29 +72,27 @@ public class UI {
      * @param msg Message to be outputted.
      */
     public void say(String msg) {
-        if(msg.isEmpty()) {
+        if (msg.isEmpty()) {
             System.out.println("> Caw");
             return;
         }
 
-        int lastSpace = -1, lastLine = -1;
+        int lastSpace = -1;
+        int lastLine = -1;
         StringBuilder newText = new StringBuilder("> ");
 
         for (int i = 0; i < msg.length(); i++) {
-            if(msg.charAt(i) == ' ') {
+            if (msg.charAt(i) == ' ') {
                 lastSpace = i;
             }
 
-            if(msg.charAt(i) == '\n') {
+            if (msg.charAt(i) == '\n') {
                 newText.append(msg, lastLine + 1, i);
                 newText.append("\n  ");
 
                 lastLine = i;
-            }
-
-            //End of line
-            else if(i - lastLine > maxLength - 2) {
-                if(lastSpace > lastLine) {
+            } else if (i - lastLine > maxLength - 2) {
+                if (lastSpace > lastLine) {
                     newText.append(msg, lastLine + 1, lastSpace);
                     newText.append("\n  ");
 

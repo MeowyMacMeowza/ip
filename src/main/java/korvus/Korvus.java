@@ -1,13 +1,5 @@
 package korvus;
 
-import korvus.storage.Storage;
-import korvus.storage.StorageConflictException;
-import korvus.storage.StorageParser;
-import korvus.tasks.InvalidTaskException;
-import korvus.tasks.Tasklist;
-import korvus.utils.CommandParser;
-import korvus.utils.DateTimeParser;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +8,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
+import korvus.storage.Storage;
+import korvus.storage.StorageConflictException;
+import korvus.storage.StorageParser;
+import korvus.tasks.InvalidTaskException;
+import korvus.tasks.Tasklist;
+import korvus.utils.CommandParser;
+import korvus.utils.DateTimeParser;
+
+/**
+ * The main class containing the logic for Korvus.
+ */
 public class Korvus {
     private static String banner =
             """
@@ -70,8 +73,11 @@ public class Korvus {
      * Starts the Korvus bot.
      */
     private void start() {
-        if(isActive) throw new RuntimeException("Already Running!");
-        else isActive = true;
+        if (isActive) {
+            throw new RuntimeException("Already Running!");
+        } else {
+            isActive = true;
+        }
 
         ui.say("Loading config file...");
         try {
@@ -107,7 +113,7 @@ public class Korvus {
         // Read from files
         try {
             boolean hasErrors = this.tasklist.readFromParser(this.tasklistParser);
-            if(hasErrors) {
+            if (hasErrors) {
                 ui.say("Warning: Failed to read some tasks! korvus.tasks.Tasklist may be missing tasks.");
             }
         } catch (IOException e) {
@@ -116,7 +122,7 @@ public class Korvus {
         ui.divider();
 
         this.greet();
-        while(isActive) {
+        while (isActive) {
             String userReply = ui.listen();
             String[] cmd = parser.parse(userReply);
             String cmdName = cmd[0];
@@ -142,40 +148,44 @@ public class Korvus {
      * Writes a list of functions that the bot can do, with detailed explanations
      */
     private void help(String input) {
+        //CHECKSTYLE.OFF: Regexp
         ui.say("Here are a list of cawmands!\nFor any invalid cawmands, I will simply parrot them back~\n");
         ui.say("list[s], task[s] - View your tasks.");
         ui.say("""
-                add task <task> - Adds a task with name <task>.
-                Use the flags -t for a korvus.tasks.ToDo, -d for a korvus.tasks.Deadline and -e for an korvus.tasks.Event.
-                 -t <task> : Adds a korvus.tasks.ToDo korvus.tasks.Task.
-                 -d <task> // <deadline> : Adds a korvus.tasks.Deadline korvus.tasks.Task with an (optional) deadline.
-                 -e <task> // <start> // <end> : Adds an korvus.tasks.Event korvus.tasks.Task with (optional) duration.""");
+            add task <task> - Adds a task with name <task>.
+            Use the flags -t for a korvus.tasks.ToDo, -d for a korvus.tasks.Deadline and -e for an korvus.tasks.Event.
+             -t <task> : Adds a korvus.tasks.ToDo korvus.tasks.Task.
+             -d <task> // <deadline> : Adds a korvus.tasks.Deadline korvus.tasks.Task with an (optional) deadline.
+             -e <task> // <start> // <end> : Adds an korvus.tasks.Event korvus.tasks.Task with (optional) duration.""");
         ui.say("add todo <task> - Adds a korvus.tasks.ToDo korvus.tasks.Task.");
-        ui.say("add deadline <task> // <deadline> - Adds a korvus.tasks.Deadline korvus.tasks.Task with an (optional) deadline.");
-        ui.say("add event <task> // <start> // <end> - Adds an korvus.tasks.Event korvus.tasks.Task with (optional) duration.");
+        ui.say("add deadline <task> // <deadline>"
+                + " - Adds a korvus.tasks.Deadline korvus.tasks.Task with an (optional) deadline.");
+        ui.say("add event <task> // <start> // <end>"
+                + " - Adds an korvus.tasks.Event korvus.tasks.Task with (optional) duration.");
         ui.say("""
-                do task <q_task> - Marks task with info <q_task> as done.
-                
-                <q_task> is first assumed to be the task id, but if invalid then assumed to be task name.
-                If there are duplicate tasks with the same name, it will only use the first one.""");
+            do task <q_task> - Marks task with info <q_task> as done.
+            
+            <q_task> is first assumed to be the task id, but if invalid then assumed to be task name.
+            If there are duplicate tasks with the same name, it will only use the first one.""");
         ui.say("""
-                undo task <q_task> - Marks task with info <q_task> as not done.
-                
-                <q_task> is first assumed to be the task id, but if invalid then assumed to be task name.
-                If there are duplicate tasks with the same name, it will only use the first one.""");
+            undo task <q_task> - Marks task with info <q_task> as not done.
+            
+            <q_task> is first assumed to be the task id, but if invalid then assumed to be task name.
+            If there are duplicate tasks with the same name, it will only use the first one.""");
         ui.say("""
-                delete task <q_task> - Removes task with info <q_task> from the tasklist.
-                
-                <q_task> is first assumed to be the task id, but if invalid then assumed to be task name.
-                If there are duplicate tasks with the same name, it will only use the first one.""");
+            delete task <q_task> - Removes task with info <q_task> from the tasklist.
+            
+            <q_task> is first assumed to be the task id, but if invalid then assumed to be task name.
+            If there are duplicate tasks with the same name, it will only use the first one.""");
         ui.say("""
-                find task <f_task> - Finds all tasks with <f_task> as part of the name from the tasklist.
-                
-                <f_task> can be any part of the name, but cannot be separated in any ways.
-                There may be regex that you may be able to apply...""");
+            find task <f_task> - Finds all tasks with <f_task> as part of the name from the tasklist.
+            
+            <f_task> can be any part of the name, but cannot be separated in any ways.
+            There may be regex that you may be able to apply...""");
         ui.say("bye - Closes the program (goodbye...)");
         ui.say("help - Hi there! I'm here to help!");
         ui.divider();
+        //CHECKSTYLE.ON: Regexp
     }
 
     /**
@@ -189,12 +199,12 @@ public class Korvus {
         // Only runs when user says bye
         isActive = false;
         try {
-            if(tasklistParser != null) {
+            if (tasklistParser != null) {
                 tasklistParser.writeStorage(tasklist);
             }
             storage.saveConfigFile(config);
         } catch (IOException e) {
-            if(forced != null) {
+            if (forced != null) {
                 ui.say(String.format("Failed to save some files!\n%s", e.getMessage()));
                 ui.say("Aborting exit... If you want to force exit, tweet \"goodbye -f\".");
                 return;
@@ -215,7 +225,7 @@ public class Korvus {
             String newTask = tasklist.addTask(task);
             ui.say(String.format("Added task:\n%d. %s", tasklist.getSize(), newTask));
             ui.divider();
-        } catch(InvalidTaskException e) {
+        } catch (InvalidTaskException e) {
             ui.say("An error occurred while creating task!");
             ui.say(e.getMessage());
             ui.divider();
@@ -230,7 +240,7 @@ public class Korvus {
     private void doTask(String sTask) {
         try {
             String taskString;
-            if(sTask.matches("\\d+") && Integer.parseInt(sTask) - 1 < tasklist.getSize()) {
+            if (sTask.matches("\\d+") && Integer.parseInt(sTask) - 1 < tasklist.getSize()) {
                 taskString = tasklist.doTask(Integer.parseInt(sTask) - 1);
             } else {
                 taskString = tasklist.doTask(sTask);
@@ -250,7 +260,7 @@ public class Korvus {
     private void undoTask(String sTask) {
         try {
             String taskString;
-            if(sTask.matches("\\d+") && Integer.parseInt(sTask) - 1 < tasklist.getSize()) {
+            if (sTask.matches("\\d+") && Integer.parseInt(sTask) - 1 < tasklist.getSize()) {
                 taskString = tasklist.undoTask(Integer.parseInt(sTask) - 1);
             } else {
                 taskString = tasklist.undoTask(sTask);
@@ -270,7 +280,7 @@ public class Korvus {
     private void deleteTask(String sTask) {
         try {
             String taskString;
-            if(sTask.matches("\\d+") && Integer.parseInt(sTask) - 1 < tasklist.getSize()) {
+            if (sTask.matches("\\d+") && Integer.parseInt(sTask) - 1 < tasklist.getSize()) {
                 taskString = tasklist.deleteTask(Integer.parseInt(sTask) - 1);
             } else {
                 taskString = tasklist.deleteTask(sTask);
@@ -292,7 +302,7 @@ public class Korvus {
      */
     private void findTasks(String input) {
         String output = tasklist.findTask(input);
-        if(output.isEmpty()) {
+        if (output.isEmpty()) {
             ui.say("No task matches your query: " + input);
         } else {
             ui.say("There are task(s) matching your query!");
@@ -305,7 +315,7 @@ public class Korvus {
      * Prints all the tasks in the bot.
      */
     private void printTasks(String input) {
-        if(tasklist.getSize() == 0) {
+        if (tasklist.getSize() == 0) {
             ui.say("You have no tasks! Caw-ngratulations!");
             return;
         }

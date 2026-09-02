@@ -1,12 +1,15 @@
 package korvus.tasks;
 
-import korvus.utils.DateTimeParser;
-
 import java.time.LocalDateTime;
 
-public class Event extends Task{
-    LocalDateTime start;
-    LocalDateTime end;
+import korvus.utils.DateTimeParser;
+
+/**
+ * Subclass of task, contains a start and end date.
+ */
+public class Event extends Task {
+    private LocalDateTime start;
+    private LocalDateTime end;
 
     /**
      * Returns an instance of the Event, a subclass of Task.
@@ -18,7 +21,8 @@ public class Event extends Task{
      * @param dateTimeParser Parser for converting String to DateTime.
      * @throws InvalidTaskException If there is any errors in the above parameters for creating a task.
      */
-    public Event(boolean isDone, String name, String start, String end, DateTimeParser dateTimeParser) throws InvalidTaskException {
+    public Event(boolean isDone, String name, String start, String end,
+                 DateTimeParser dateTimeParser) throws InvalidTaskException {
         super(isDone, name, dateTimeParser);
         this.start = dateTimeParser.parseDateString(start);
         this.end = dateTimeParser.parseDateString(end);

@@ -1,6 +1,9 @@
 package korvus.storage;
 
-public class StorageConflictException extends Exception{
+/**
+ * Exception for Storage conflict issues.
+ */
+public class StorageConflictException extends Exception {
 
     /**
      * Returns an instance of StorageConflictException, if there is any conflicts with file access in Storage.

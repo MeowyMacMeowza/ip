@@ -2,8 +2,11 @@ package korvus.tasks;
 
 import korvus.utils.DateTimeParser;
 
-/// To-Do is used throughout this file to prevent false auto-linting of to-do
-public class ToDo extends Task{
+/**
+ * Subclass of task, contains the bare minimum.
+ * To-Do is used throughout this file to prevent false auto-linting of to-do.
+ */
+public class ToDo extends Task {
 
     /**
      * Returns an instance of the To-Do, a subclass of Task.
