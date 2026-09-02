@@ -1,4 +1,4 @@
-package korvus;
+package korvus.ui;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -7,31 +7,31 @@ import java.util.Scanner;
 /**
  * UI class for reading user inputs and writing bot replies.
  */
-public class UI {
+public class CommandLineUI implements UI {
     private Scanner inputScanner;
     private PrintStream outputStream;
     private int maxLength;
 
     /**
-     * Returns an instance of UI.
+     * Returns an instance of CommandLineUI.
      *
      * @param inStream Input stream that users will input from.
      * @param outStream Output stream that the UI should print to.
      * @param maxLength Max length of characters in the outputStream.
      */
-    public UI(InputStream inStream, PrintStream outStream, int maxLength) {
+    public CommandLineUI(InputStream inStream, PrintStream outStream, int maxLength) {
         this.inputScanner = new Scanner(inStream);
         this.outputStream = outStream;
         this.maxLength = maxLength;
     }
 
     /**
-     * Returns an instance of UI.
+     * Returns an instance of CommandLineUI.
      *
      * @param inStream Input stream that users will input from.
-     * @param outStream Output stream that the UI should print to.
+     * @param outStream Output stream that the CommandLineUI should print to.
      */
-    public UI(InputStream inStream, PrintStream outStream) {
+    public CommandLineUI(InputStream inStream, PrintStream outStream) {
         this(inStream, outStream, 70);
     }
 
@@ -73,7 +73,7 @@ public class UI {
      */
     public void say(String msg) {
         if (msg.isEmpty()) {
-            System.out.println("> Caw");
+            outputStream.println("> Caw");
             return;
         }
 
