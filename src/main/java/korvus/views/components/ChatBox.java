@@ -8,8 +8,6 @@ public class ChatBox extends ScrollPane {
 
     public ChatBox() {
         this.chatLog = new VBox();
-//        this.chatLog.maxWidthProperty().bind(this.widthProperty());
-
         this.setContent(chatLog);
 
         this.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);

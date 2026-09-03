@@ -4,20 +4,20 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
-import korvus.Korvus;
+import korvus.bot.AppKorvus;
 import korvus.views.components.ChatBox;
 import korvus.views.components.ChatMessage;
 
 public class MainView extends AnchorPane {
-    private Korvus korvus;
+    private AppKorvus korvus;
     private Image userImage = new Image(this.getClass().getResourceAsStream("/images/userImage.gif"));
-    private Image korvusImage = new Image(this.getClass().getResourceAsStream("/images/botImage.jpg"));
+    private Image korvusImage = new Image(this.getClass().getResourceAsStream("/images/botImage.jpg"), 120, 120, true, true);
 
     private ChatBox chatBox;
     private TextField userInput;
     private Button sendButton;
 
-    public MainView(Korvus korvus) {
+    public MainView(AppKorvus korvus) {
         this.korvus = korvus;
 
         chatBox = new ChatBox();
@@ -37,8 +37,8 @@ public class MainView extends AnchorPane {
         AnchorPane.setBottomAnchor(sendButton, 10.0);
         AnchorPane.setRightAnchor(sendButton, 10.0);
 
-        chatBox.prefHeightProperty().bind(this.heightProperty().subtract(userInput.heightProperty()).subtract(20));
-        userInput.prefWidthProperty().bind(this.widthProperty().subtract(sendButton.widthProperty()).subtract(20));
+        chatBox.prefHeightProperty().bind(this.heightProperty().subtract(userInput.heightProperty()).subtract(30));
+        userInput.prefWidthProperty().bind(this.widthProperty().subtract(sendButton.widthProperty()).subtract(30));
         sendButton.prefHeightProperty().bindBidirectional(userInput.prefHeightProperty());
 
         this.getChildren().addAll(chatBox, userInput, sendButton);

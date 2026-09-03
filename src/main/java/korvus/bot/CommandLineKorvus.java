@@ -1,4 +1,4 @@
-package korvus;
+package korvus.bot;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -9,6 +9,15 @@ import korvus.ui.CommandLineUI;
  * hi.
  */
 public class CommandLineKorvus extends Korvus {
+    private static String banner =
+            """
+              /|
+             / | _ ____--___   ___   _  ____
+             | |/ |    |  __| / / | | |/ __/
+             |   <| [] | | \\ ' /| |_| |\\__ \\
+             |_/\\_|____|_|  \\_/  \\__,_|\\___/
+            """;
+
     /**
      * Returns a default instance of the Korvus object.
      */
@@ -30,6 +39,9 @@ public class CommandLineKorvus extends Korvus {
     //CHECKSTYLE.OFF: SeparatorWrap
     @Override
     public void initialise() {
+        ui.divider();
+        ui.rawPrint(banner);
+
         super.initialise();
         ((CommandLineUI) ui).setMaxLength(Integer.parseInt(this.config.getValue("commandline_length")));
 

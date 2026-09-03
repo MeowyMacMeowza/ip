@@ -1,4 +1,4 @@
-package korvus;
+package korvus.bot;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -6,13 +6,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
-import javafx.application.Application;
+import korvus.Config;
 import korvus.storage.Storage;
 import korvus.storage.StorageConflictException;
 import korvus.storage.StorageParser;
 import korvus.tasks.InvalidTaskException;
 import korvus.tasks.Tasklist;
-import korvus.ui.AppUI;
 import korvus.ui.UI;
 import korvus.utils.CommandParser;
 import korvus.utils.DateTimeParser;
@@ -21,15 +20,6 @@ import korvus.utils.DateTimeParser;
  * The main class containing the logic for Korvus.
  */
 public class Korvus {
-    private static String banner =
-            """
-              /|
-             / | _ ____--___   ___   _  ____
-             | |/ |    |  __| / / | | |/ __/
-             |   <| [] | | \\ ' /| |_| |\\__ \\
-             |_/\\_|____|_|  \\_/  \\__,_|\\___/
-            """;
-
     protected UI ui;
     protected Config config;
     protected boolean isActive;
@@ -126,7 +116,6 @@ public class Korvus {
      */
     private void greet() {
         ui.divider();
-        ui.rawPrint(banner);
         ui.say("Nice to meet you!");
         ui.say("I am caw-lled Korvus, your personal chatbot for keeping track of shiny things.");
         ui.say("To get a list of cawmands, tweet 'help'!");
@@ -184,7 +173,6 @@ public class Korvus {
         ui.say("Saving session information to disk...");
 
         // Only runs when user says bye
-        isActive = false;
         try {
             if (tasklistParser != null) {
                 tasklistParser.writeStorage(tasklist);
@@ -197,6 +185,7 @@ public class Korvus {
                 return;
             }
         }
+        isActive = false;
 
         ui.say("Goodbye! Eagle to see you again!");
     }
