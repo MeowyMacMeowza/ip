@@ -1,18 +1,18 @@
-package korvus;
+package korvus.bot;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
+import korvus.Config;
 import korvus.storage.Storage;
 import korvus.storage.StorageConflictException;
 import korvus.storage.StorageParser;
 import korvus.tasks.InvalidTaskException;
 import korvus.tasks.Tasklist;
+import korvus.ui.UI;
 import korvus.utils.CommandParser;
 import korvus.utils.DateTimeParser;
 
@@ -20,59 +20,34 @@ import korvus.utils.DateTimeParser;
  * The main class containing the logic for Korvus.
  */
 public class Korvus {
-    private static String banner =
-            """
-              /|
-             / | _ ____--___   ___   _  ____
-             | |/ |    |  __| / / | | |/ __/
-             |   <| [] | | \\ ' /| |_| |\\__ \\
-             |_/\\_|____|_|  \\_/  \\__,_|\\___/
-            """;
+    protected UI ui;
+    protected Config config;
+    protected boolean isActive;
 
-    private UI ui;
     private CommandParser parser;
     private HashMap<String, Consumer<String>> commandMap;
-
     private DateTimeParser dateTimeParser;
     private Tasklist tasklist;
     private StorageParser<Tasklist> tasklistParser;
     private Storage storage;
-    private Config config;
-    private boolean isActive;
-
-    /**
-     * Returns a default instance of the Korvus object.
-     */
-    private Korvus() {
-        this(System.in, System.out, "");
-    }
 
     /**
      * Returns an instance of the Korvus object, with the provided parameters.
      *
-     * @param input Input Stream that user inputs from.
-     * @param output Output Stream that Korvus writes to.
+     * @param ui UI tagged to the Korvus instance.
      * @param storagePath Relative path to the directory with files for Korvus to use.
      */
-    private Korvus(InputStream input, PrintStream output, String storagePath) {
-        this.ui = new UI(input, output);
+    public Korvus(UI ui, String storagePath) {
+        this.ui = ui;
         this.storage = new Storage(storagePath);
         this.parser = new CommandParser();
         this.commandMap = generateCommandMapping();
     }
 
     /**
-     * Creates the Korvus bot and starts it.
-     */
-    public static void main(String[] args) {
-        Korvus bot = new Korvus(System.in, System.out, "data/");
-        bot.start();
-    }
-
-    /**
      * Starts the Korvus bot.
      */
-    private void start() {
+    public void initialise() {
         if (isActive) {
             throw new RuntimeException("Already Running!");
         } else {
@@ -92,9 +67,8 @@ public class Korvus {
         this.dateTimeParser = new DateTimeParser(
                 DateTimeFormatter.ofPattern(this.config.getValue("datetime_format"))
         );
-        this.ui.setMaxLength(Integer.parseInt(this.config.getValue("commandline_length")));
 
-        // Adding Parsers to korvus.storage.Storage
+        // Adding Parsers to Storage
         try {
             this.tasklistParser = new StorageParser<Tasklist>(
                     this.storage,
@@ -103,33 +77,38 @@ public class Korvus {
         } catch (StorageConflictException e) {
             ui.say(String.format("""
                     Warning: Failed to connect parser to tasklist!
-                    korvus.tasks.Tasklist will be empty and cannot be saved to storage.
+                    Tasklist will be empty and cannot be saved to storage.
                     Error: %s""", e.getMessage()));
         }
 
-        // Initialise korvus.tasks.Tasklist
+        // Initialise Tasklist
         this.tasklist = new Tasklist(this.dateTimeParser);
 
         // Read from files
         try {
             boolean hasErrors = this.tasklist.readFromParser(this.tasklistParser);
             if (hasErrors) {
-                ui.say("Warning: Failed to read some tasks! korvus.tasks.Tasklist may be missing tasks.");
+                ui.say("Warning: Failed to read some tasks! Tasklist may be missing tasks.");
             }
         } catch (IOException e) {
-            ui.say("Warning: Failed tasklist file! korvus.tasks.Tasklist will be empty.");
+            ui.say("Warning: Failed tasklist file! Tasklist will be empty.");
         }
         ui.divider();
 
         this.greet();
-        while (isActive) {
-            String userReply = ui.listen();
-            String[] cmd = parser.parse(userReply);
-            String cmdName = cmd[0];
-            String cmdArgs = cmd[1];
+    }
 
-            commandMap.get(cmdName).accept(cmdArgs);
-        }
+    /**
+     * Reads a message from the user.
+     *
+     * @param msg Message that the user inputted.
+     */
+    public void readUserMessage(String msg) {
+        String[] cmd = parser.parse(msg);
+        String cmdName = cmd[0];
+        String cmdArgs = cmd[1];
+
+        commandMap.get(cmdName).accept(cmdArgs);
     }
 
     /**
@@ -137,11 +116,9 @@ public class Korvus {
      */
     private void greet() {
         ui.divider();
-        ui.rawPrint(banner);
         ui.say("Nice to meet you!");
-        ui.say("I am caw-lled korvus.Korvus, your personal chatbot for keeping track of shiny things.");
+        ui.say("I am caw-lled Korvus, your personal chatbot for keeping track of shiny things.");
         ui.say("To get a list of cawmands, tweet 'help'!");
-        ui.divider();
     }
 
     /**
@@ -153,15 +130,15 @@ public class Korvus {
         ui.say("list[s], task[s] - View your tasks.");
         ui.say("""
             add task <task> - Adds a task with name <task>.
-            Use the flags -t for a korvus.tasks.ToDo, -d for a korvus.tasks.Deadline and -e for an korvus.tasks.Event.
-             -t <task> : Adds a korvus.tasks.ToDo korvus.tasks.Task.
-             -d <task> // <deadline> : Adds a korvus.tasks.Deadline korvus.tasks.Task with an (optional) deadline.
-             -e <task> // <start> // <end> : Adds an korvus.tasks.Event korvus.tasks.Task with (optional) duration.""");
-        ui.say("add todo <task> - Adds a korvus.tasks.ToDo korvus.tasks.Task.");
+            Use the flags -t for a ToDo, -d for a Deadline and -e for an Event.
+             -t <task> : Adds a ToDo Task.
+             -d <task> // <deadline> : Adds a Deadline Task with an (optional) deadline.
+             -e <task> // <start> // <end> : Adds an Event Task with (optional) duration.""");
+        ui.say("add todo <task> - Adds a ToDo Task.");
         ui.say("add deadline <task> // <deadline>"
-                + " - Adds a korvus.tasks.Deadline korvus.tasks.Task with an (optional) deadline.");
+                + " - Adds a Deadline Task with an (optional) deadline.");
         ui.say("add event <task> // <start> // <end>"
-                + " - Adds an korvus.tasks.Event korvus.tasks.Task with (optional) duration.");
+                + " - Adds an Event Task with (optional) duration.");
         ui.say("""
             do task <q_task> - Marks task with info <q_task> as done.
             
@@ -184,7 +161,6 @@ public class Korvus {
             There may be regex that you may be able to apply...""");
         ui.say("bye - Closes the program (goodbye...)");
         ui.say("help - Hi there! I'm here to help!");
-        ui.divider();
         //CHECKSTYLE.ON: Regexp
     }
 
@@ -197,7 +173,6 @@ public class Korvus {
         ui.say("Saving session information to disk...");
 
         // Only runs when user says bye
-        isActive = false;
         try {
             if (tasklistParser != null) {
                 tasklistParser.writeStorage(tasklist);
@@ -210,9 +185,9 @@ public class Korvus {
                 return;
             }
         }
+        isActive = false;
 
         ui.say("Goodbye! Eagle to see you again!");
-        ui.divider();
     }
 
     /**
@@ -245,11 +220,10 @@ public class Korvus {
             } else {
                 taskString = tasklist.doTask(sTask);
             }
-            ui.say(String.format("Success! korvus.tasks.Task has been marked done!\n%s", taskString));
+            ui.say(String.format("Success! Task has been marked done!\n%s", taskString));
         } catch (InvalidTaskException e) {
             ui.say(String.format("Oh no... Failed to mark task: %s", e.getMessage()));
         }
-        ui.divider();
     }
 
     /**
@@ -265,11 +239,10 @@ public class Korvus {
             } else {
                 taskString = tasklist.undoTask(sTask);
             }
-            ui.say(String.format("Success! korvus.tasks.Task has been unmarked!\n%s", taskString));
+            ui.say(String.format("Success! Task has been unmarked!\n%s", taskString));
         } catch (InvalidTaskException e) {
             ui.say(String.format("Oh no... Failed to unmark task: %s", e.getMessage()));
         }
-        ui.divider();
     }
 
     /**
@@ -286,13 +259,12 @@ public class Korvus {
                 taskString = tasklist.deleteTask(sTask);
             }
             ui.say(String.format("""
-                    Success! korvus.tasks.Task (%s) has been deleted!
+                    Success! Task (%s) has been deleted!
                     Take note that the other tasks may have new indexes now.
                     Do tweet "list" or "task" to view your updated tasklist.""", taskString));
         } catch (InvalidTaskException e) {
             ui.say(String.format("Oh no... Failed to delete task: %s", e.getMessage()));
         }
-        ui.divider();
     }
 
     /**
@@ -308,7 +280,6 @@ public class Korvus {
             ui.say("There are task(s) matching your query!");
             ui.say(output);
         }
-        ui.divider();
     }
 
     /**
@@ -321,7 +292,6 @@ public class Korvus {
         }
         ui.say("Here are your tasks!");
         ui.say(tasklist.toString());
-        ui.divider();
     }
 
     /**
