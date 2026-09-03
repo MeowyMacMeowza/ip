@@ -1,5 +1,6 @@
 package korvus.views;
 
+import javafx.css.Stylesheet;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -41,6 +42,8 @@ public class MainView extends AnchorPane {
         userInput.prefWidthProperty().bind(this.widthProperty().subtract(sendButton.widthProperty()).subtract(30));
         sendButton.prefHeightProperty().bindBidirectional(userInput.prefHeightProperty());
 
+        String mainCss = this.getClass().getResource("/css/main.css").toExternalForm();
+        this.getStylesheets().add(mainCss);
         this.getChildren().addAll(chatBox, userInput, sendButton);
     }
 

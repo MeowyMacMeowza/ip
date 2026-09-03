@@ -35,12 +35,17 @@ public class ChatMessage extends HBox {
         this.setSpacing(10);
 
         if (isBot) { // flip
+            messageLabel.getStyleClass().add("korvus-label");
             this.getChildren().addAll(displayFrame, messageLabel);
             this.setAlignment(Pos.CENTER_LEFT);
         } else {
+            messageLabel.getStyleClass().add("user-label");
             this.getChildren().addAll(messageLabel, displayFrame);
             this.setAlignment(Pos.CENTER_RIGHT);
         }
+
+        String messageCss = this.getClass().getResource("/css/chatmessage.css").toExternalForm();
+        this.getStylesheets().add(messageCss);
     }
 
     private void createDisplayPicture(int size) {
