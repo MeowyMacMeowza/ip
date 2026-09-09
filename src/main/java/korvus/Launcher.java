@@ -12,7 +12,7 @@ public class Launcher {
         boolean isCli = false;
 
         for (String arg : args) {
-            if (arg == "-cli") {
+            if (arg.equals("-cli")) {
                 isCli = true;
             }
         }
