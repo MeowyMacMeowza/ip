@@ -10,9 +10,18 @@ import korvus.views.components.ChatBox;
 import korvus.views.components.ChatMessage;
 
 public class MainView extends AnchorPane {
+    private static String USER_IMAGE = "/images/userImage.gif";
+    private static String BOT_IMAGE = "/images/botImage.jpg";
+    private static int DEFAULT_SIZE = 120;
+    private static double DEFAULT_SPACING = 10.0;
+    private static String DEFAULT_BUTTON_TEXT = "Send";
+    private static String DEFAULT_PROMPT_TEXT = "Send a message here!";
+
     private AppKorvus korvus;
-    private Image userImage = new Image(this.getClass().getResourceAsStream("/images/userImage.gif"));
-    private Image korvusImage = new Image(this.getClass().getResourceAsStream("/images/botImage.jpg"), 120, 120, true, true);
+    private Image userImage = new Image(this.getClass().getResourceAsStream(USER_IMAGE));
+    private Image korvusImage = new Image(
+            this.getClass().getResourceAsStream(BOT_IMAGE),
+            DEFAULT_SIZE, DEFAULT_SIZE, true, true);
 
     private ChatBox chatBox;
     private TextField userInput;
@@ -22,29 +31,42 @@ public class MainView extends AnchorPane {
         this.korvus = korvus;
 
         chatBox = new ChatBox();
-        chatBox.setFitToWidth(true);
-        AnchorPane.setTopAnchor(chatBox, 10.0);
-        AnchorPane.setLeftAnchor(chatBox, 10.0);
-        AnchorPane.setRightAnchor(chatBox, 10.0);
 
         userInput = new TextField();
-        userInput.setPromptText("Send a message here!");
-        userInput.setOnAction(e -> handleUserMessage());
-        AnchorPane.setBottomAnchor(userInput, 10.0);
-        AnchorPane.setLeftAnchor(userInput, 10.0);
+        userInput.setPromptText(DEFAULT_PROMPT_TEXT);
+        userInput.setOnAction(_ -> handleUserMessage());
 
-        sendButton = new Button("Send");
-        sendButton.setOnAction(e -> handleUserMessage());
-        AnchorPane.setBottomAnchor(sendButton, 10.0);
-        AnchorPane.setRightAnchor(sendButton, 10.0);
+        sendButton = new Button(DEFAULT_BUTTON_TEXT);
+        sendButton.setOnAction(_ -> handleUserMessage());
 
-        chatBox.prefHeightProperty().bind(this.heightProperty().subtract(userInput.heightProperty()).subtract(30));
-        userInput.prefWidthProperty().bind(this.widthProperty().subtract(sendButton.widthProperty()).subtract(30));
+        this.setAnchors();
+        this.setStyling();
+
+        this.getChildren().addAll(chatBox, userInput, sendButton);
+    }
+
+    private void setAnchors() {
+        AnchorPane.setTopAnchor(chatBox, DEFAULT_SPACING);
+        AnchorPane.setLeftAnchor(chatBox, DEFAULT_SPACING);
+        AnchorPane.setRightAnchor(chatBox, DEFAULT_SPACING);
+
+        AnchorPane.setBottomAnchor(userInput, DEFAULT_SPACING);
+        AnchorPane.setLeftAnchor(userInput, DEFAULT_SPACING);
+
+        AnchorPane.setBottomAnchor(sendButton, DEFAULT_SPACING);
+        AnchorPane.setRightAnchor(sendButton, DEFAULT_SPACING);
+
+        chatBox.prefHeightProperty().bind(
+                this.heightProperty().subtract(userInput.heightProperty()).subtract(3 * DEFAULT_SPACING));
+        userInput.prefWidthProperty().bind(
+                this.widthProperty().subtract(sendButton.widthProperty()).subtract(3 * DEFAULT_SPACING));
+
         sendButton.prefHeightProperty().bindBidirectional(userInput.prefHeightProperty());
+    }
 
+    private void setStyling() {
         String mainCss = this.getClass().getResource("/css/main.css").toExternalForm();
         this.getStylesheets().add(mainCss);
-        this.getChildren().addAll(chatBox, userInput, sendButton);
     }
 
     private void handleUserMessage() {

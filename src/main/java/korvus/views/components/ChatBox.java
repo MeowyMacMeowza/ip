@@ -26,6 +26,7 @@ public class ChatBox extends ScrollPane {
         this.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         this.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         this.vvalueProperty().bind(chatLog.heightProperty());
+        this.setFitToWidth(true);
     }
 
     /**
