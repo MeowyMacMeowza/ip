@@ -6,6 +6,9 @@ import javafx.stage.Stage;
 import korvus.bot.AppKorvus;
 import korvus.views.MainView;
 
+/**
+ * Main GUI for Korvus.
+ */
 public class AppUI extends Application implements UI {
     private static int START_WIDTH = 600;
     private static int START_HEIGHT = 800;
