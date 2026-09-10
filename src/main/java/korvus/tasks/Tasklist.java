@@ -14,6 +14,7 @@ import korvus.utils.DateTimeParser;
  */
 public class Tasklist implements Storable<Tasklist> {
     private static String TASK_SEP = "<>";
+    private static int TASK_NOT_FOUND;
 
     private DateTimeParser dateTimeParser;
     private ArrayList<Task> tasklist;
@@ -76,17 +77,10 @@ public class Tasklist implements Storable<Tasklist> {
      * @throws InvalidTaskException If the task data provided is invalid.
      */
     public String deleteTask(String sTask) throws InvalidTaskException {
-        int id = -1;
-        for (int i = 0; i < tasklist.size(); i++) {
-            if (!tasklist.get(i).getName().equals(sTask)) {
-                continue;
-            }
-            id = i;
-            break;
-        }
+        int id = findTaskIdByName(sTask);
 
         //Failed to find task
-        if (id == -1) {
+        if (id == TASK_NOT_FOUND) {
             throw new InvalidTaskException(String.format("Task cannot be found.\nName: %s", sTask));
         } else {
             return deleteTask(id);
@@ -112,17 +106,10 @@ public class Tasklist implements Storable<Tasklist> {
      * @throws InvalidTaskException If the task is already marked as done.
      */
     public String doTask(String sTask) throws InvalidTaskException {
-        int id = -1;
-        for (int i = 0; i < tasklist.size(); i++) {
-            if (!tasklist.get(i).getName().equals(sTask)) {
-                continue;
-            }
-            id = i;
-            break;
-        }
+        int id = findTaskIdByName(sTask);
 
         //Failed to find task
-        if (id == -1) {
+        if (id == TASK_NOT_FOUND) {
             throw new InvalidTaskException(String.format("Task cannot be found.\nInput: %s", sTask));
         } else {
             return doTask(id);
@@ -138,6 +125,7 @@ public class Tasklist implements Storable<Tasklist> {
      */
     public String doTask(int id) throws InvalidTaskException {
         boolean status = tasklist.get(id).doTask();
+
         if (!status) {
             throw new InvalidTaskException(String.format("Task has already been done\n%s", tasklist.get(id)));
         }
@@ -153,17 +141,10 @@ public class Tasklist implements Storable<Tasklist> {
      * @throws InvalidTaskException If the task is already marked as not done.
      */
     public String undoTask(String sTask) throws InvalidTaskException {
-        int id = -1;
-        for (int i = 0; i < tasklist.size(); i++) {
-            if (!tasklist.get(i).getName().equals(sTask)) {
-                continue;
-            }
-            id = i;
-            break;
-        }
+        int id = findTaskIdByName(sTask);
 
         //Failed to find task
-        if (id == -1) {
+        if (id == TASK_NOT_FOUND) {
             throw new InvalidTaskException(String.format("Task cannot be found.\nName: %s", sTask));
         } else {
             return undoTask(id);
@@ -179,9 +160,11 @@ public class Tasklist implements Storable<Tasklist> {
      */
     public String undoTask(int id) throws InvalidTaskException {
         boolean status = tasklist.get(id).undoTask();
+
         if (!status) {
             throw new InvalidTaskException(String.format("Task has not been done\n%s", tasklist.get(id)));
         }
+
         return tasklist.get(id).toString();
     };
 
@@ -194,11 +177,10 @@ public class Tasklist implements Storable<Tasklist> {
     public String findTask(String keyWord) {
         StringBuilder stringBuilder = new StringBuilder();
         String searchPattern = ".*(" + keyWord + ").*";
+
         for (int i = 0; i < tasklist.size(); i++) {
             if (tasklist.get(i).getName().matches(searchPattern)) {
-                if (!stringBuilder.isEmpty()) {
-                    stringBuilder.append('\n');
-                }
+                addNewLine(stringBuilder);
                 stringBuilder.append(String.format("%d. %s", i + 1, tasklist.get(i)));
             }
         }
@@ -206,6 +188,40 @@ public class Tasklist implements Storable<Tasklist> {
         return stringBuilder.toString();
     }
 
+    /**
+     * Adds a new line to the StringBuilder if it is non-empty.
+     *
+     * @param stringBuilder StringBuilder to append a new line to.
+     */
+    private void addNewLine(StringBuilder stringBuilder) {
+        if (!stringBuilder.isEmpty()) {
+            stringBuilder.append('\n');
+        }
+    }
+
+    /**
+     * Returns the id of the task that has the same name as the query.
+     *
+     * @param sTask Name of the task to find.
+     * @return Index of the task with the same name.
+     */
+    private int findTaskIdByName(String sTask) {
+        int id = -1;
+        for (int i = 0; i < tasklist.size(); i++) {
+            if (tasklist.get(i).getName().equals(sTask)) {
+                id = i;
+                break;
+            }
+        }
+
+        return id;
+    }
+
+    /**
+     * Writes the tasklist into a String for storing.
+     *
+     * @return String containing all the task information in the tasklist.
+     */
     @Override
     public String writeToString() {
         StringBuilder output = new StringBuilder();
@@ -218,11 +234,18 @@ public class Tasklist implements Storable<Tasklist> {
         return output.toString();
     }
 
+    /**
+     * Reads from a StorageParser to populate the tasks in the tasklist.
+     *
+     * @param storageParser StorageParser to read from.
+     * @return Boolean on whether there are any errors in the file operations.
+     * @throws IOException If there is an error in reading the file.
+     */
     @Override
-    public boolean readFromParser(StorageParser<? extends Storable<Tasklist>> parser) throws IOException {
+    public boolean readFromParser(StorageParser<? extends Storable<Tasklist>> storageParser) throws IOException {
         boolean hasErrors = false;
 
-        for (String sTask : parser.readStorage().split(TASK_SEP)) {
+        for (String sTask : storageParser.readStorage().split(TASK_SEP)) {
             try {
                 tasklist.add(Task.readTaskFromFile(sTask, dateTimeParser));
             } catch (InvalidTaskException | IndexOutOfBoundsException e) {
@@ -233,6 +256,11 @@ public class Tasklist implements Storable<Tasklist> {
         return hasErrors;
     }
 
+    /**
+     * Returns a String containing all tasks.
+     *
+     * @return String containing all tasks in a formatted list.
+     */
     @Override
     public String toString() {
         StringBuilder tasks = new StringBuilder();
