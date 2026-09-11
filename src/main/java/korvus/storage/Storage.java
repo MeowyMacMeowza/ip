@@ -80,10 +80,8 @@ public class Storage {
     public <T extends Storable<T>> void addParser(StorageParser<T> newParser) throws StorageConflictException {
         assert newParser.storage.equals(this);
 
-        for (StorageParser<? extends Storable<?>> parser : parserList) {
-            if (parser.isParserConflict(newParser)) {
-                throw new StorageConflictException("Cannot assign multiple parsers to one file");
-            }
+        if (parserList.stream().anyMatch(parser -> parser.isParserConflict(newParser))) {
+            throw new StorageConflictException("Cannot assign multiple parsers to one file");
         }
 
         parserList.add(newParser);
