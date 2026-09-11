@@ -99,7 +99,7 @@ public class Task {
      */
     public static Task generateTask(String taskInput,
                                     DateTimeParser dateTimeParser) throws InvalidTaskException {
-        return switch (taskInput) {
+        Task newTask = switch (taskInput) {
             case String s when s.startsWith(TaskType.TODO.flag) -> {
                 yield new ToDo(s.substring(3), dateTimeParser);
             }
@@ -117,6 +117,12 @@ public class Task {
             }
             default -> new ToDo(taskInput, dateTimeParser);
         };
+
+        assert newTask.name != null;
+        assert !newTask.name.startsWith("-");
+        assert newTask.dateTimeParser.equals(dateParser);
+
+        return newTask;
     }
 
     /**

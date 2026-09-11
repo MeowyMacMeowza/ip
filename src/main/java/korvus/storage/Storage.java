@@ -78,6 +78,8 @@ public class Storage {
      * @throws StorageConflictException If there exists another StorageParser that has the same file path.
      */
     public <T extends Storable<T>> void addParser(StorageParser<T> newParser) throws StorageConflictException {
+        assert newParser.storage.equals(this);
+
         for (StorageParser<? extends Storable<?>> parser : parserList) {
             if (parser.isParserConflict(newParser)) {
                 throw new StorageConflictException("Cannot assign multiple parsers to one file");
