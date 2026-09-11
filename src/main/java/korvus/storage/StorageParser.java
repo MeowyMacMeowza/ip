@@ -10,7 +10,8 @@ import java.io.IOException;
  * @param <T> Storable to be specialised for.
  */
 public class StorageParser<T extends Storable<T>> {
-    private Storage storage;
+    @SuppressWarnings("checkstyle:VisibilityModifier")
+    Storage storage;
     private String filePath;
 
     /**

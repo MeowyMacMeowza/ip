@@ -77,6 +77,8 @@ public class Config {
      * @return Config object with default values.
      */
     public static Config readConfigFile(BufferedReader br) {
+        assert br != null;
+
         Config config = new Config();
         br.lines()
                 .map(str -> str.split("="))
@@ -98,6 +100,8 @@ public class Config {
      * @param bw BufferedWriter pointing to the Config file to write to.
      */
     public void saveConfigFile(BufferedWriter bw) throws IOException {
+        assert bw != null;
+
         StringBuilder output = new StringBuilder();
         for (String key : configMap.keySet()) {
             if (!output.isEmpty()) {
