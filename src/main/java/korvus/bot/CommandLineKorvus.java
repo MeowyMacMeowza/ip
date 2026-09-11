@@ -36,26 +36,45 @@ public class CommandLineKorvus extends Korvus {
         super(new CommandLineUI(input, output), storagePath);
     }
 
-    //CHECKSTYLE.OFF: SeparatorWrap
+    /**
+     * @inheritDoc
+     */
     @Override
     public void initialise() {
         ui.divider();
         ui.rawPrint(banner);
 
         super.initialise();
-        ((CommandLineUI) ui).setMaxLength(Integer.parseInt(this.config.getValue("commandline_length")));
 
-        while (isActive) {
-            String userReply = ((CommandLineUI) ui).listen();
-            readUserMessage(userReply);
-        }
+        this.updateLineLength();
+
+        this.beginListen();
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
-    public void readUserMessage(String msg) {
-        super.readUserMessage(msg);
+    public void processUserMessage(String msg) {
+        super.processUserMessage(msg);
         ui.divider();
     }
 
-    //CHECKSTYLE.ON: SeparatorWrap
+    /**
+     * Updates the maximum line length of the Command Line UI.
+     */
+    private void updateLineLength() {
+        CommandLineUI clUi = ((CommandLineUI) ui);
+        clUi.setMaxLength(Integer.parseInt(this.config.getValue("commandline_length")));
+    }
+
+    /**
+     * Starts listening for user inputs.
+     */
+    private void beginListen() {
+        while (isActive) {
+            String userReply = ((CommandLineUI) ui).listen();
+            processUserMessage(userReply);
+        }
+    }
 }
