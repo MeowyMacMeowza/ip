@@ -99,11 +99,11 @@ public class Korvus {
     }
 
     /**
-     * Reads a message from the user.
+     * Reads a message from the user and processes it.
      *
      * @param msg Message that the user inputted.
      */
-    public void readUserMessage(String msg) {
+    public void processUserMessage(String msg) {
         String[] cmd = parser.parse(msg);
         String cmdName = cmd[0];
         String cmdArgs = cmd[1];

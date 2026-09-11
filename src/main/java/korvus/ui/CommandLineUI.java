@@ -8,6 +8,9 @@ import java.util.Scanner;
  * UI class for reading user inputs and writing bot replies.
  */
 public class CommandLineUI implements UI {
+    private static int DEFAULT_MAX_LINE_LENGTH = 70;
+    private static char DIVIDER_CHAR = '_';
+
     private Scanner inputScanner;
     private PrintStream outputStream;
     private int maxLength;
@@ -32,7 +35,7 @@ public class CommandLineUI implements UI {
      * @param outStream Output stream that the CommandLineUI should print to.
      */
     public CommandLineUI(InputStream inStream, PrintStream outStream) {
-        this(inStream, outStream, 70);
+        this(inStream, outStream, DEFAULT_MAX_LINE_LENGTH);
     }
 
     /**
@@ -84,25 +87,21 @@ public class CommandLineUI implements UI {
         for (int i = 0; i < msg.length(); i++) {
             if (msg.charAt(i) == ' ') {
                 lastSpace = i;
+                continue;
+            } else if (msg.charAt(i) == '\n') {
+                newText.append(msg + "\n  ", lastLine + 1, i);
+                lastLine = i;
+                continue;
+            } else if (i - lastLine <= maxLength - 2) {
+                continue;
             }
 
-            if (msg.charAt(i) == '\n') {
-                newText.append(msg, lastLine + 1, i);
-                newText.append("\n  ");
-
-                lastLine = i;
-            } else if (i - lastLine > maxLength - 2) {
-                if (lastSpace > lastLine) {
-                    newText.append(msg, lastLine + 1, lastSpace);
-                    newText.append("\n  ");
-
-                    lastLine = lastSpace;
-                } else {
-                    newText.append(msg, lastLine + 1, lastLine + maxLength - 1);
-                    newText.append("\n  ");
-
-                    lastLine += maxLength - 2;
-                }
+            if (lastSpace > lastLine) {
+                newText.append(msg + "\n  ", lastLine + 1, lastSpace);
+                lastLine = lastSpace;
+            } else {
+                newText.append(msg + "\n ", lastLine + 1, lastLine + maxLength - 1);
+                lastLine += maxLength - 2;
             }
         }
         newText.append(msg.substring(lastLine + 1));
@@ -123,7 +122,7 @@ public class CommandLineUI implements UI {
      */
     public void divider() {
         StringBuilder divider = new StringBuilder();
-        divider.repeat("_", maxLength);
+        divider.repeat(DIVIDER_CHAR, maxLength);
 
         outputStream.println(divider);
     }

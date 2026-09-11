@@ -46,7 +46,7 @@ public class Task {
     public Task(boolean isDone, String name, DateTimeParser dateTimeParser) throws InvalidTaskException {
         if (name.startsWith("-")) {
             throw new InvalidTaskException(
-                    "korvus.tasks.Task name cannot start with '-'! Are you sure that you typed the name correctly?");
+                    "Task name cannot start with '-'! Are you sure that you typed the name correctly?");
         }
         this.name = name;
         this.isDone = isDone;
@@ -94,27 +94,28 @@ public class Task {
      * Returns an instance of a Task, given an input with parameters.
      *
      * @param taskInput String of the input command, without any processing.
-     * @param dateParser Custom parser to convert String to DateTime and vice-versa.
+     * @param dateTimeParser Custom parser to convert String to DateTime and vice-versa.
      * @return a task after parsing the input command.
      */
-    public static Task generateTask(String taskInput, DateTimeParser dateParser) throws InvalidTaskException {
+    public static Task generateTask(String taskInput,
+                                    DateTimeParser dateTimeParser) throws InvalidTaskException {
         Task newTask = switch (taskInput) {
             case String s when s.startsWith(TaskType.TODO.flag) -> {
-                yield new ToDo(s.substring(3), dateParser);
+                yield new ToDo(s.substring(3), dateTimeParser);
             }
             case String s when s.startsWith(TaskType.DEADLINE.flag) -> {
                 String[] args = s.substring(3).split(DATA_SEP, 2);
                 yield args.length > 1
-                        ? new Deadline(args[0], args[1], dateParser)
-                        : new Deadline(args[0], dateParser);
+                        ? new Deadline(args[0], args[1], dateTimeParser)
+                        : new Deadline(args[0], dateTimeParser);
             }
             case String s when s.startsWith(TaskType.EVENT.flag) -> {
                 String[] args = s.substring(3).split(DATA_SEP, 3);
                 yield args.length > 2
-                        ? new Event(args[0], args[1], args[2], dateParser)
-                        : new Event(args[0], dateParser);
+                        ? new Event(args[0], args[1], args[2], dateTimeParser)
+                        : new Event(args[0], dateTimeParser);
             }
-            default -> new ToDo(taskInput, dateParser);
+            default -> new ToDo(taskInput, dateTimeParser);
         };
 
         assert newTask.name != null;
@@ -128,22 +129,23 @@ public class Task {
      * Returns an instance of a Task, given an input from a file.
      *
      * @param fileInput String of the input command, without any processing.
-     * @param dateParser Custom parser to convert String to DateTime and vice-versa.
+     * @param dateTimeParser Custom parser to convert String to DateTime and vice-versa.
      * @return a task after parsing the input command.
      */
-    protected static Task readTaskFromFile(String fileInput, DateTimeParser dateParser) throws InvalidTaskException {
+    protected static Task readTaskFromFile(String fileInput,
+                                           DateTimeParser dateTimeParser) throws InvalidTaskException {
         return switch (fileInput) {
             case String s when s.startsWith(TaskType.TODO.flag) -> {
                 String[] args = s.split(DATA_SEP, 3);
-                yield new ToDo(Boolean.parseBoolean(args[2]), args[1], dateParser);
+                yield new ToDo(Boolean.parseBoolean(args[2]), args[1], dateTimeParser);
             }
             case String s when s.startsWith(TaskType.DEADLINE.flag) -> {
                 String[] args = s.split(DATA_SEP, 4);
-                yield new Deadline(Boolean.parseBoolean(args[2]), args[1], args[3], dateParser);
+                yield new Deadline(Boolean.parseBoolean(args[2]), args[1], args[3], dateTimeParser);
             }
             case String s when s.startsWith(TaskType.EVENT.flag) -> {
                 String[] args = s.split(DATA_SEP, 5);
-                yield new Event(Boolean.parseBoolean(args[2]), args[1], args[3], args[4], dateParser);
+                yield new Event(Boolean.parseBoolean(args[2]), args[1], args[3], args[4], dateTimeParser);
             }
             default -> {
                 throw new InvalidTaskException(String.format("Task format not supported!\nInput: %s", fileInput));

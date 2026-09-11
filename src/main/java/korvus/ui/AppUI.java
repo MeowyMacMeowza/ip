@@ -6,27 +6,35 @@ import javafx.stage.Stage;
 import korvus.bot.AppKorvus;
 import korvus.views.MainView;
 
+/**
+ * Main GUI for Korvus.
+ */
 public class AppUI extends Application implements UI {
+    private static int START_WIDTH = 600;
+    private static int START_HEIGHT = 800;
+    private static int MIN_WIDTH = 400;
+    private static int MIN_HEIGHT = 200;
+
     private AppKorvus korvus;
     private MainView mainView;
-    //Korvus korvus = new Korvus(this)
-
-    //say() -> maybe i am the mainpane lmao -> override;
-    //listen() -> NO NEED, directly do korvus.sendReply(msg);
-    //Launcher -> launch AppUI(Korvus, MainView) -> MainView (Korvus)
 
     @Override
     public void start(Stage stage) throws Exception {
-        korvus = new AppKorvus(this, "data/");
-        mainView = new MainView(korvus);
-        korvus.initialise();
+        this.korvus = new AppKorvus(this, "data/");
+        this.mainView = new MainView(korvus);
+        this.korvus.initialise();
 
-        Scene scene = new Scene(mainView, 600, 800);
+        Scene scene = new Scene(mainView, START_WIDTH, START_HEIGHT);
         stage.setScene(scene);
-        stage.setMinHeight(200);
-        stage.setMinWidth(400);
+
+        this.doWindowSettings(stage);
 
         stage.show();
+    }
+
+    private void doWindowSettings(Stage stage) {
+        stage.setMinWidth(MIN_WIDTH);
+        stage.setMinHeight(MIN_HEIGHT);
     }
 
     @Override
