@@ -10,45 +10,52 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
+/**
+ * ChatMessage class to contain the user and bot messages for the GUI.
+ */
 public class ChatMessage extends HBox {
+    private static int DEFAULT_DISPLAY_SIZE = 60;
+    private static int DEFAULT_DISPLAY_BORDER = 2;
+    private static int DEFAULT_SPACING = 10;
+
     private Label messageLabel;
     private ImageView displayImage;
     private StackPane displayFrame;
     private Circle imageBorder;
 
+    /**
+     * Returns a ChatMessage with the given message.
+     *
+     * @param isBot Whether the message is from the bot.
+     * @param image Display Image of the message owner.
+     * @param message Content to be written.
+     */
     public ChatMessage(boolean isBot, Image image, String message) {
-        displayImage = new ImageView(image);
-        displayImage.setPreserveRatio(true);
+        createStyling();
+        createDisplayBorder();
+        createDisplayPicture(image, DEFAULT_DISPLAY_SIZE);
 
+        writeMessage(message);
+        generateMessage(isBot);
+    }
+
+    private void writeMessage(String message) {
         messageLabel = new Label(message);
         messageLabel.setWrapText(true);
         messageLabel.prefHeightProperty().bindBidirectional(this.prefHeightProperty());
+    }
 
+    private void createDisplayBorder() {
         imageBorder = new Circle();
         imageBorder.setFill(Color.TRANSPARENT);
         imageBorder.setStroke(Color.VIOLET);
-        imageBorder.setStrokeWidth(2);
-
-        createDisplayPicture(60);
-
-        this.setPadding(new Insets(10));
-        this.setSpacing(10);
-
-        if (isBot) { // flip
-            messageLabel.getStyleClass().add("korvus-label");
-            this.getChildren().addAll(displayFrame, messageLabel);
-            this.setAlignment(Pos.CENTER_LEFT);
-        } else {
-            messageLabel.getStyleClass().add("user-label");
-            this.getChildren().addAll(messageLabel, displayFrame);
-            this.setAlignment(Pos.CENTER_RIGHT);
-        }
-
-        String messageCss = this.getClass().getResource("/css/chatmessage.css").toExternalForm();
-        this.getStylesheets().add(messageCss);
+        imageBorder.setStrokeWidth(DEFAULT_DISPLAY_BORDER);
     }
 
-    private void createDisplayPicture(int size) {
+    private void createDisplayPicture(Image image, int size) {
+        displayImage = new ImageView(image);
+        displayImage.setPreserveRatio(true);
+
         double halfSize = size / 2.0;
         displayFrame = new StackPane();
 
@@ -60,5 +67,25 @@ public class ChatMessage extends HBox {
         displayImage.setFitHeight(size);
 
         displayFrame.getChildren().addAll(displayImage, imageBorder);
+    }
+
+    private void generateMessage(boolean isBot) {
+        if (isBot) {
+            messageLabel.getStyleClass().add("korvus-label");
+            this.getChildren().addAll(displayFrame, messageLabel);
+            this.setAlignment(Pos.CENTER_LEFT);
+        } else {
+            messageLabel.getStyleClass().add("user-label");
+            this.getChildren().addAll(messageLabel, displayFrame);
+            this.setAlignment(Pos.CENTER_RIGHT);
+        }
+    }
+
+    private void createStyling() {
+        this.setPadding(new Insets(DEFAULT_SPACING));
+        this.setSpacing(DEFAULT_SPACING);
+
+        String messageCss = this.getClass().getResource("/css/chatmessage.css").toExternalForm();
+        this.getStylesheets().add(messageCss);
     }
 }

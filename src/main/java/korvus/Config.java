@@ -3,7 +3,9 @@ package korvus;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 /**
  * Contains the configuration setting for the bot.
@@ -61,9 +63,8 @@ public class Config {
     public static Config generateNewConfig() {
         Config newConfig = new Config();
 
-        for (ConfigType ct : ConfigType.values()) {
-            newConfig.configMap.put(ct.toString(), ct.value);
-        }
+        Arrays.stream(ConfigType.values())
+                .forEach((ct) -> newConfig.configMap.put(ct.toString(), ct.value));
 
         return newConfig;
     }
@@ -77,17 +78,17 @@ public class Config {
      * @return Config object with default values.
      */
     public static Config readConfigFile(BufferedReader br) {
+        assert br != null;
+
         Config config = new Config();
         br.lines()
                 .map(str -> str.split("="))
                 .filter(arr -> arr.length == 2)
                 .forEach(arr -> config.configMap.put(arr[0], arr[1]));
 
-        for (ConfigType ct : ConfigType.values()) {
-            if (!config.configMap.containsKey(ct.toString())) {
-                config.configMap.put(ct.toString(), ct.value);
-            }
-        }
+        Arrays.stream(ConfigType.values())
+                .filter((ct) -> !config.configMap.containsKey(ct.toString()))
+                .forEach((ct) -> config.configMap.put(ct.toString(), ct.value));
 
         return config;
     }
@@ -98,17 +99,13 @@ public class Config {
      * @param bw BufferedWriter pointing to the Config file to write to.
      */
     public void saveConfigFile(BufferedWriter bw) throws IOException {
-        StringBuilder output = new StringBuilder();
-        for (String key : configMap.keySet()) {
-            if (!output.isEmpty()) {
-                output.append('\n');
-            }
-            output.append(key);
-            output.append('=');
-            output.append(configMap.get(key));
-        }
+        assert bw != null;
 
-        bw.write(output.toString());
+        String output = configMap.keySet().stream()
+                .map((key) -> String.format("%s=%s", key, configMap.get(key)))
+                .reduce("", (a, x) -> String.format("%s\n%s", a, x));
+
+        bw.write(output);
         bw.close();
     }
 }

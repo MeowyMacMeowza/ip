@@ -18,17 +18,23 @@ public class AppKorvus extends Korvus {
         super(ui, storagePath);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
-    public void readUserMessage(String msg) {
-        if (!this.isActive) {
-            return;
-        }
-
-        super.readUserMessage(msg);
+    public void processUserMessage(String msg) {
+        super.processUserMessage(msg);
 
         if (!this.isActive) {
-            Timeline tl = new Timeline(new KeyFrame(Duration.millis(800), (t) -> Platform.exit()));
-            tl.play();
+            exitProgram();
         }
+    }
+
+    /**
+     * Exits the Korvus program.
+     */
+    private void exitProgram() {
+        Timeline exitTimeLine = new Timeline(new KeyFrame(Duration.millis(800), (t) -> Platform.exit()));
+        exitTimeLine.play();
     }
 }

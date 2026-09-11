@@ -99,11 +99,11 @@ public class Korvus {
     }
 
     /**
-     * Reads a message from the user.
+     * Reads a message from the user and processes it.
      *
      * @param msg Message that the user inputted.
      */
-    public void readUserMessage(String msg) {
+    public void processUserMessage(String msg) {
         String[] cmd = parser.parse(msg);
         String cmdName = cmd[0];
         String cmdArgs = cmd[1];
@@ -115,6 +115,8 @@ public class Korvus {
      * Writes a greeting to the UI.
      */
     private void greet() {
+        assert isActive = true;
+
         ui.divider();
         ui.say("Nice to meet you!");
         ui.say("I am caw-lled Korvus, your personal chatbot for keeping track of shiny things.");
@@ -125,6 +127,8 @@ public class Korvus {
      * Writes a list of functions that the bot can do, with detailed explanations
      */
     private void help(String input) {
+        assert isActive = true;
+
         //CHECKSTYLE.OFF: Regexp
         ui.say("Here are a list of cawmands!\nFor any invalid cawmands, I will simply parrot them back~\n");
         ui.say("list[s], task[s] - View your tasks.");
@@ -170,6 +174,8 @@ public class Korvus {
      * @param forced If null, forces the bot to stop regardless whether its data can be saved to Storage.
      */
     private void goodbye(String forced) {
+        assert isActive = true;
+
         ui.say("Saving session information to disk...");
 
         // Only runs when user says bye
@@ -196,6 +202,8 @@ public class Korvus {
      * @param task String containing data of Task to be saved.
      */
     private void addTask(String task) {
+        assert isActive = true;
+
         try {
             String newTask = tasklist.addTask(task);
             ui.say(String.format("Added task:\n%d. %s", tasklist.getSize(), newTask));
@@ -213,6 +221,8 @@ public class Korvus {
      * @param sTask String containing data of Task to be marked as done.
      */
     private void doTask(String sTask) {
+        assert isActive = true;
+
         try {
             String taskString;
             if (sTask.matches("\\d+") && Integer.parseInt(sTask) - 1 < tasklist.getSize()) {
@@ -232,6 +242,8 @@ public class Korvus {
      * @param sTask String containing data of Task to be marked as not done.
      */
     private void undoTask(String sTask) {
+        assert isActive = true;
+
         try {
             String taskString;
             if (sTask.matches("\\d+") && Integer.parseInt(sTask) - 1 < tasklist.getSize()) {
@@ -251,6 +263,8 @@ public class Korvus {
      * @param sTask String containing data of Task to be deleted.
      */
     private void deleteTask(String sTask) {
+        assert isActive = true;
+
         try {
             String taskString;
             if (sTask.matches("\\d+") && Integer.parseInt(sTask) - 1 < tasklist.getSize()) {
@@ -273,6 +287,8 @@ public class Korvus {
      * @param input String containing keyword to search.
      */
     private void findTasks(String input) {
+        assert isActive = true;
+
         String output = tasklist.findTask(input);
         if (output.isEmpty()) {
             ui.say("No task matches your query: " + input);
@@ -286,6 +302,8 @@ public class Korvus {
      * Prints all the tasks in the bot.
      */
     private void printTasks(String input) {
+        assert isActive = true;
+
         if (tasklist.getSize() == 0) {
             ui.say("You have no tasks! Caw-ngratulations!");
             return;
