@@ -54,6 +54,20 @@ public class Korvus {
             isActive = true;
         }
 
+        this.loadFromConfigs();
+        this.createStorageParsers();
+
+        // Initialise Tasklist
+        this.tasklist = new Tasklist(this.dateTimeParser);
+
+        this.readFromStorage();
+        this.greet();
+    }
+
+    /**
+     * Loads configuration information from file system.
+     */
+    private void loadFromConfigs() {
         ui.say("Loading config file...");
         try {
             this.config = this.storage.readConfigFile();
@@ -67,8 +81,12 @@ public class Korvus {
         this.dateTimeParser = new DateTimeParser(
                 DateTimeFormatter.ofPattern(this.config.getValue("datetime_format"))
         );
+    }
 
-        // Adding Parsers to Storage
+    /**
+     * Initialises the StorageParsers to be used.
+     */
+    private void createStorageParsers() {
         try {
             this.tasklistParser = new StorageParser<Tasklist>(
                     this.storage,
@@ -80,11 +98,12 @@ public class Korvus {
                     Tasklist will be empty and cannot be saved to storage.
                     Error: %s""", e.getMessage()));
         }
+    }
 
-        // Initialise Tasklist
-        this.tasklist = new Tasklist(this.dateTimeParser);
-
-        // Read from files
+    /**
+     * Reads data from file system
+     */
+    private void readFromStorage() {
         try {
             boolean hasErrors = this.tasklist.readFromParser(this.tasklistParser);
             if (hasErrors) {
@@ -94,8 +113,6 @@ public class Korvus {
             ui.say("Warning: Failed tasklist file! Tasklist will be empty.");
         }
         ui.divider();
-
-        this.greet();
     }
 
     /**
