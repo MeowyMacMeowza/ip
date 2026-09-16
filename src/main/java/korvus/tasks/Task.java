@@ -120,7 +120,7 @@ public class Task {
 
         assert newTask.name != null;
         assert !newTask.name.startsWith("-");
-        assert newTask.dateTimeParser.equals(dateParser);
+        assert newTask.dateTimeParser.equals(dateTimeParser);
 
         return newTask;
     }
