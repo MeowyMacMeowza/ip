@@ -251,6 +251,8 @@ public class Tasklist implements Storable<Tasklist> {
 
         TaskOperation reverseOperation = taskOperationStack.removeLast().getReverseOperation();
         executeTaskOperation(reverseOperation);
+
+        return reverseOperation.getTask().toString();
     }
 
     private void executeTaskOperation(TaskOperation taskOperation) throws InvalidTaskException {
