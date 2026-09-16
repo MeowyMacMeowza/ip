@@ -57,7 +57,6 @@ public class Korvus {
         this.loadFromConfigs();
         this.createStorageParsers();
 
-        // Initialise Tasklist
         this.tasklist = new Tasklist(this.dateTimeParser);
 
         this.readFromStorage();

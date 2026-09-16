@@ -14,10 +14,12 @@ import korvus.utils.DateTimeParser;
  */
 public class Tasklist implements Storable<Tasklist> {
     private static String TASK_SEP = "<>";
-    private static int TASK_NOT_FOUND;
+    private static int TASK_NOT_FOUND = -1;
+    private static int OPERATION_HISTORY_LIMIT = 10;
 
     private DateTimeParser dateTimeParser;
     private ArrayList<Task> tasklist;
+    private ArrayList<TaskOperation> taskOperationStack;
 
     /**
      * Returns an instance of tasklist.
@@ -65,8 +67,27 @@ public class Tasklist implements Storable<Tasklist> {
      */
     public String addTask(String task) throws InvalidTaskException {
         Task newTask = Task.generateTask(task, dateTimeParser);
-        tasklist.add(newTask);
-        return newTask.toString();
+
+        return addTask(newTask);
+    }
+
+    /**
+     * Adds the task into the tasklist.
+     *
+     * @param task Task to be added.
+     */
+    public String addTask(Task task) throws InvalidTaskException {
+        TaskOperation addTask = new TaskOperation(tasklist.size(), task, TaskOperation.OperationType.ADD);
+        return doTaskOperation(addTask);
+    }
+
+    /**
+     * Adds the task into the tasklist.
+     *
+     * @param operation TaskOperation with task information to be added.
+     */
+    public void addTask(TaskOperation operation) {
+        tasklist.add(operation.getTask());
     }
 
     /**
@@ -85,18 +106,28 @@ public class Tasklist implements Storable<Tasklist> {
         } else {
             return deleteTask(id);
         }
-    };
+    }
 
     /**
      * Removes the task from the tasklist.
      *
-     * @param id Task index to be deleted.
+     * @param id Index of Task to be deleted.
      * @return String representation of the deleted Task in the tasklist.
+     * @throws InvalidTaskException If the task data provided is invalid.
      */
-    public String deleteTask(int id) {
-        return tasklist.remove(id).toString();
-    };
+    public String deleteTask(int id) throws InvalidTaskException {
+        TaskOperation deleteTask = new TaskOperation(id, tasklist.get(id), TaskOperation.OperationType.DELETE);
+        return doTaskOperation(deleteTask);
+    }
 
+    /**
+     * Removes the task from the tasklist.
+     *
+     * @param operation TaskOperation with the information for deletion.
+     */
+    public void deleteTask(TaskOperation operation) {
+        tasklist.remove(operation.getId());
+    };
 
     /**
      * Marks the task from the tasklist as done.
@@ -119,18 +150,27 @@ public class Tasklist implements Storable<Tasklist> {
     /**
      * Marks the task from the tasklist as done.
      *
-     * @param id Index of task to be marked as done.
+     * @param id Index of Task to be marked as done.
      * @return String representation of the Task provided in the tasklist after marking.
      * @throws InvalidTaskException If the task is already marked as done.
      */
     public String doTask(int id) throws InvalidTaskException {
-        boolean status = tasklist.get(id).doTask();
+        TaskOperation doTask = new TaskOperation(id, tasklist.get(id), TaskOperation.OperationType.DO);
+        return doTaskOperation(doTask);
+    };
+
+    /**
+     * Marks the task from the tasklist as done.
+     *
+     * @param operation TaskOperation with the information for marking as done.
+     * @throws InvalidTaskException If the task is already marked as done.
+     */
+    public void doTask(TaskOperation operation) throws InvalidTaskException {
+        boolean status = operation.getTask().doTask();
 
         if (!status) {
-            throw new InvalidTaskException(String.format("Task has already been done\n%s", tasklist.get(id)));
+            throw new InvalidTaskException(String.format("Task has already been done\n%s", operation.getTask()));
         }
-
-        return tasklist.get(id).toString();
     };
 
     /**
@@ -154,18 +194,27 @@ public class Tasklist implements Storable<Tasklist> {
     /**
      * Marks the task from the tasklist as not done.
      *
-     * @param id Index of task to be marked as not done.
+     * @param id Index of Task to be marked as not done.
      * @return String representation of the Task provided in the tasklist after marking.
      * @throws InvalidTaskException If the task is already marked as not done.
      */
     public String undoTask(int id) throws InvalidTaskException {
-        boolean status = tasklist.get(id).undoTask();
+        TaskOperation undoTask = new TaskOperation(id, tasklist.get(id), TaskOperation.OperationType.UNDO);
+        return doTaskOperation(undoTask);
+    };
+
+    /**
+     * Marks the task from the tasklist as not done.
+     *
+     * @param operation TaskOperation with the information for marking as not done.
+     * @throws InvalidTaskException If the task is already marked as not done.
+     */
+    public void undoTask(TaskOperation operation) throws InvalidTaskException {
+        boolean status = operation.getTask().undoTask();
 
         if (!status) {
-            throw new InvalidTaskException(String.format("Task has not been done\n%s", tasklist.get(id)));
+            throw new InvalidTaskException(String.format("Task has not been done\n%s", operation.getTask()));
         }
-
-        return tasklist.get(id).toString();
     };
 
     /**
@@ -188,6 +237,43 @@ public class Tasklist implements Storable<Tasklist> {
         return stringBuilder.toString();
     }
 
+    public String doTaskOperation(TaskOperation taskOperation) throws InvalidTaskException {
+        executeTaskOperation(taskOperation);
+        addOperationToHistory(taskOperation);
+
+        return taskOperation.getTask().toString();
+    }
+
+    public String undoTaskOperation() throws InvalidTaskException {
+        if (taskOperationStack.isEmpty()) {
+            return null;
+        }
+
+        TaskOperation reverseOperation = taskOperationStack.removeLast().getReverseOperation();
+        executeTaskOperation(reverseOperation);
+    }
+
+    private void executeTaskOperation(TaskOperation taskOperation) throws InvalidTaskException {
+        switch (taskOperation.getOperation()) {
+            case DO -> doTask(taskOperation);
+            case UNDO -> undoTask(taskOperation);
+            case ADD -> addTask(taskOperation);
+            case DELETE -> deleteTask(taskOperation);
+            default -> {
+                assert false;
+                throw new InvalidTaskException("Not a valid task operation!");
+            }
+        }
+    }
+
+    private void addOperationToHistory(TaskOperation operation) {
+        taskOperationStack.add(operation);
+
+        if (taskOperationStack.size() > OPERATION_HISTORY_LIMIT) {
+            taskOperationStack.removeFirst();
+        }
+    }
+
     /**
      * Adds a new line to the StringBuilder if it is non-empty.
      *
@@ -206,7 +292,7 @@ public class Tasklist implements Storable<Tasklist> {
      * @return Index of the task with the same name.
      */
     private int findTaskIdByName(String sTask) {
-        int id = -1;
+        int id = TASK_NOT_FOUND;
         for (int i = 0; i < tasklist.size(); i++) {
             if (tasklist.get(i).getName().equals(sTask)) {
                 id = i;
