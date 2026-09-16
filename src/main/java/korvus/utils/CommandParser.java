@@ -24,6 +24,8 @@ public class CommandParser {
                 new String[] { "bye" , s.matches("-f") ? "force" : null };
             case String s when s.matches("help") -> new String[] { "help" , "" };
             case String s when s.matches("(task(s)?)|(list(s)?)") -> new String[] { "list" , "" };
+            case String s when s.matches("find task .*") ->
+                    new String[] { "find", s.split("find task ", 2)[1] };
 
             // Add Task
             case String s when s.matches("add task .*") ->
@@ -44,8 +46,8 @@ public class CommandParser {
                 new String[] { "undo", s.split("undo(ne)? task ", 2)[1] };
             case String s when s.matches("del(ete)? task .*") ->
                 new String[] { "del", s.split("del(ete)? task ", 2)[1] };
-            case String s when s.matches("find task .*") ->
-                new String[] { "find", s.split("find task ", 2)[1] };
+            case String s when s.matches("(undo|cancel) last") ->
+                new String[] { "backtrack", "" };
 
             default -> new String[] { "echo", input.isEmpty() ? "Caw~" : input + "~" };
         };

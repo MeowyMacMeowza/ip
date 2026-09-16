@@ -179,6 +179,7 @@ public class Korvus {
             
             <f_task> can be any part of the name, but cannot be separated in any ways.
             There may be regex that you may be able to apply...""");
+        ui.say("undo last - Undoes the previous action. Note that this is limited to do, undo, add, delete.");
         ui.say("bye - Closes the program (goodbye...)");
         ui.say("help - Hi there! I'm here to help!");
         //CHECKSTYLE.ON: Regexp
@@ -314,6 +315,19 @@ public class Korvus {
         }
     }
 
+    private void undoAction(String input) {
+        assert isActive = true;
+
+        try {
+            String output = tasklist.undoTaskOperation();
+
+            ui.say(String.format("Sucessfully undid action for:\n%s", output));
+        } catch (InvalidTaskException e) {
+            ui.say(e.getMessage());
+            ui.say("Failed to undo task operation :(");
+        }
+    }
+
     /**
      * Prints all the tasks in the bot.
      */
@@ -344,6 +358,7 @@ public class Korvus {
         commandMap.put("undo", this::undoTask);
         commandMap.put("del", this::deleteTask);
         commandMap.put("find", this::findTasks);
+        commandMap.put("backtrack", this::undoAction);
         commandMap.put("echo", this.ui::say);
 
         return commandMap;

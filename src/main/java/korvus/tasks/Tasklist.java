@@ -29,6 +29,7 @@ public class Tasklist implements Storable<Tasklist> {
     public Tasklist(DateTimeParser dateTimeParser) {
         tasklist = new ArrayList<>();
         this.dateTimeParser = dateTimeParser;
+        this.taskOperationStack = new ArrayList<>(10);
     }
 
     /**
@@ -246,7 +247,7 @@ public class Tasklist implements Storable<Tasklist> {
 
     public String undoTaskOperation() throws InvalidTaskException {
         if (taskOperationStack.isEmpty()) {
-            return null;
+            throw new InvalidTaskException("No task operation to undo!");
         }
 
         TaskOperation reverseOperation = taskOperationStack.removeLast().getReverseOperation();
