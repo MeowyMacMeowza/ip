@@ -1,7 +1,7 @@
 .root {
-    main-bg-color: rgb(215, 227, 243);       /* Create a looked-up color called "main-color" within root. */
-    -fx-background-color: main-color;
-    -fx-font: 18px "Comic Sans MS";
+    main-bg-color: rgb(242, 238, 255);       /* Create a looked-up color called "main-color" within root. */
+    -fx-background-color: main-bg-color;
+    -fx-font: 16px "Comic Sans MS";
 }
 
 .text-field {
@@ -45,11 +45,14 @@
 }
 
 .scroll-bar .thumb {
-    -fx-background-color: #ccbaff;
+    -fx-background-color: #8559f1;
     -fx-background-radius: 2em;
+
+    -fx-border-color: #2e2e88;
+    -fx-border-width: 2px;
+    -fx-border-radius: 2em;
 }
 
-/* Hides the increment and decrement buttons. */
 .scroll-bar .increment-button,
 .scroll-bar .decrement-button {
     -fx-pref-height: 0;
