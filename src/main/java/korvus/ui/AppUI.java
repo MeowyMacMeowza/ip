@@ -23,6 +23,9 @@ public class AppUI extends Application implements UI {
     private AppKorvus korvus;
     private MainView mainView;
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void start(Stage stage) throws Exception {
         this.korvus = new AppKorvus(this, "data/");
@@ -37,6 +40,11 @@ public class AppUI extends Application implements UI {
         stage.show();
     }
 
+    /**
+     * Adjusts the setting for the main Korvus Window.
+     *
+     * @param stage Windows to apply settings to.
+     */
     private void doWindowSettings(Stage stage) {
         stage.setTitle(TITLE);
         stage.setMinWidth(MIN_WIDTH);
@@ -45,6 +53,11 @@ public class AppUI extends Application implements UI {
         stage.getIcons().add(icon);
     }
 
+    /**
+     * Sends a message to the application from Korvus.
+     *
+     * @param msg Message from Korvus.
+     */
     @Override
     public void say(String msg) {
         rawPrint(msg);
@@ -55,6 +68,11 @@ public class AppUI extends Application implements UI {
         return;
     }
 
+    /**
+     * Sends a message to the application from Korvus.
+     *
+     * @param msg Message from Korvus.
+     */
     @Override
     public void rawPrint(String msg) {
         mainView.handleKorvusMessage(msg);

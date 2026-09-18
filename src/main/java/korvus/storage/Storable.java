@@ -13,7 +13,7 @@ public interface Storable<T> {
      *
      * @return String to be written to a file.
      */
-    public String writeToString();
+    String writeToString();
 
     /**
      * Reads the provided parser and saves its data in itself.
@@ -22,5 +22,5 @@ public interface Storable<T> {
      * @return Boolean whether the reading process had any errors.
      * @throws IOException If there is any error reading the file (with the parser).
      */
-    public boolean readFromParser(StorageParser<? extends Storable<T>> parser) throws IOException;
+    boolean readFromParser(StorageParser<? extends Storable<T>> parser) throws IOException;
 }

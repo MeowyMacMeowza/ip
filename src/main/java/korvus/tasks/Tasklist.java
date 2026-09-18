@@ -238,6 +238,13 @@ public class Tasklist implements Storable<Tasklist> {
         return stringBuilder.toString();
     }
 
+    /**
+     * Runs the provided TaskOperation
+     *
+     * @param taskOperation TaskOperation to be run.
+     * @return String representation of the Task after said operation.
+     * @throws InvalidTaskException
+     */
     public String doTaskOperation(TaskOperation taskOperation) throws InvalidTaskException {
         executeTaskOperation(taskOperation);
         addOperationToHistory(taskOperation);
@@ -245,6 +252,12 @@ public class Tasklist implements Storable<Tasklist> {
         return taskOperation.getTask().toString();
     }
 
+    /**
+     * Undoes the previous TaskOperation
+     *
+     * @return String representation of the Task after said operation.
+     * @throws InvalidTaskException If the TaskOperation provided is invalid.
+     */
     public String undoTaskOperation() throws InvalidTaskException {
         if (taskOperationStack.isEmpty()) {
             throw new InvalidTaskException("No task operation to undo!");
@@ -256,6 +269,12 @@ public class Tasklist implements Storable<Tasklist> {
         return reverseOperation.getTask().toString();
     }
 
+    /**
+     * Executes the TaskOperation provided.
+     *
+     * @param taskOperation TaskOperation to be run.
+     * @throws InvalidTaskException If the TaskOperation provided is invalid.
+     */
     private void executeTaskOperation(TaskOperation taskOperation) throws InvalidTaskException {
         switch (taskOperation.getOperation()) {
             case DO -> doTask(taskOperation);
@@ -269,6 +288,11 @@ public class Tasklist implements Storable<Tasklist> {
         }
     }
 
+    /**
+     * Adds the TaskOperation to the recent operations stack.
+     *
+     * @param operation TaskOperation to be added.
+     */
     private void addOperationToHistory(TaskOperation operation) {
         taskOperationStack.add(operation);
 

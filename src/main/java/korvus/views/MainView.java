@@ -8,6 +8,9 @@ import korvus.bot.AppKorvus;
 import korvus.views.components.ChatBox;
 import korvus.views.components.ChatMessage;
 
+/**
+ * The Main Layout of the Korvus Application.
+ */
 public class MainView extends AnchorPane {
     private static String USER_IMAGE = "/images/userImage.gif";
     private static String BOT_IMAGE = "/images/botImage.jpg";
@@ -26,6 +29,11 @@ public class MainView extends AnchorPane {
     private TextField userInput;
     private Button sendButton;
 
+    /**
+     * Returns an instance of the main layout.
+     *
+     * @param korvus Korvus instance to bind with the application.
+     */
     public MainView(AppKorvus korvus) {
         this.korvus = korvus;
 
@@ -44,6 +52,9 @@ public class MainView extends AnchorPane {
         this.getChildren().addAll(chatBox, userInput, sendButton);
     }
 
+    /**
+     * Anchors the elements in the layout properly.
+     */
     private void setAnchors() {
         AnchorPane.setTopAnchor(chatBox, DEFAULT_SPACING);
         AnchorPane.setLeftAnchor(chatBox, DEFAULT_SPACING);
@@ -63,11 +74,17 @@ public class MainView extends AnchorPane {
         sendButton.prefHeightProperty().bindBidirectional(userInput.prefHeightProperty());
     }
 
+    /**
+     * Sets the style for the main layout (and its elements).
+     */
     private void setStyling() {
         String mainCss = this.getClass().getResource("/css/main.css").toExternalForm();
         this.getStylesheets().add(mainCss);
     }
 
+    /**
+     * Handles the inputs from the user.
+     */
     private void handleUserMessage() {
         chatBox.addMessageToQueue(new ChatMessage(false, userImage, userInput.getText().trim()));
         this.korvus.processUserMessage(userInput.getText().trim());
@@ -75,6 +92,11 @@ public class MainView extends AnchorPane {
         userInput.clear();
     }
 
+    /**
+     * Handles the outputs from Korvus.
+     *
+     * @param msg Message to be outputted to the application.
+     */
     public void handleKorvusMessage(String msg) {
         chatBox.addMessageToQueue(new ChatMessage(true, korvusImage, msg));
     }

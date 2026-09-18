@@ -19,6 +19,12 @@ public class Launcher {
         }
     }
 
+    /**
+     * Returns whether it is a CLI program.
+     *
+     * @param args Arguments passed into its execution.
+     * @return If the application is a CLI program.
+     */
     private static boolean isCli(String... args) {
         boolean isCli = false;
 

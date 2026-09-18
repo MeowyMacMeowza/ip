@@ -6,7 +6,7 @@ import java.io.PrintStream;
 import korvus.ui.CommandLineUI;
 
 /**
- * hi.
+ * The main class containing logic for Korvus Command Line App.
  */
 public class CommandLineKorvus extends Korvus {
     private static String banner =

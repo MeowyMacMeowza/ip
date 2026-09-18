@@ -42,7 +42,12 @@ public class ChatBox extends ScrollPane {
         this.setFitToWidth(true);
     }
 
+    /**
+     * Initialises the ChatMessageList containing messages to be added to the ChatBox.
+     */
     private void setUpChatMessagesList() {
+
+        // ListChangeListener to automatically flush ChatMessages into ChatBox smoothly.
         this.chatMessagesList = FXCollections.observableArrayList();
         this.chatMessagesList.addListener((ListChangeListener<ChatMessage>) change -> {
             while (change.next()) {
@@ -70,10 +75,21 @@ public class ChatBox extends ScrollPane {
         transition.setOnFinished(e -> chatMessagesList.remove(chatMessage));
     }
 
+    /**
+     * Adds a ChatMessage to the ChatMessageList.
+     *
+     * @param chatMessage ChatMessage to be added to the ChatBox.
+     */
     public void addMessageToQueue(ChatMessage chatMessage) {
         chatMessagesList.add(chatMessage);
     }
 
+    /**
+     * Creates the smooth transition for ChatMessages to show up in the ChatBox.
+     *
+     * @param chatMessage ChatMessage to apply the transition to.
+     * @return Transition attached to th given ChatMessage.
+     */
     private TranslateTransition createTransition(ChatMessage chatMessage) {
         TranslateTransition translateTransition = new TranslateTransition();
         translateTransition.setNode(chatMessage);

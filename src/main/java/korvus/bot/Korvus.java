@@ -315,6 +315,9 @@ public class Korvus {
         }
     }
 
+    /**
+     * Undoes the previous task command.
+     */
     private void undoAction(String input) {
         assert isActive = true;
 

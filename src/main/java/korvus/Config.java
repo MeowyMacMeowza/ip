@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 /**
  * Contains the configuration setting for the bot.

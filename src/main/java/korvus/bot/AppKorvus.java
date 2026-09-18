@@ -6,6 +6,9 @@ import javafx.application.Platform;
 import javafx.util.Duration;
 import korvus.ui.AppUI;
 
+/**
+ * The main class containing logic for Korvus GUI App.
+ */
 public class AppKorvus extends Korvus {
 
     private static Duration EXIT_TIMEOUT = Duration.millis(2000);

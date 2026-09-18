@@ -39,15 +39,23 @@ public class ChatMessage extends HBox {
         createDisplayPicture(image, DEFAULT_DISPLAY_SIZE);
 
         writeMessage(message);
-        generateMessage(isBot);
+        generateMessage();
     }
 
+    /**
+     * Sets the content of the ChatMessage to the message provided.
+     *
+     * @param message Content to be written.
+     */
     private void writeMessage(String message) {
         messageLabel = new Label(message);
         messageLabel.setWrapText(true);
         messageLabel.prefHeightProperty().bindBidirectional(this.prefHeightProperty());
     }
 
+    /**
+     * Initialises the display picture border.
+     */
     private void createDisplayBorder() {
         imageBorder = new Circle();
         imageBorder.setFill(Color.TRANSPARENT);
@@ -55,6 +63,12 @@ public class ChatMessage extends HBox {
         imageBorder.setStrokeWidth(DEFAULT_DISPLAY_BORDER);
     }
 
+    /**
+     * Initialises the display picture itself.
+     *
+     * @param image Image for the display picture.
+     * @param size Size of the display picture.
+     */
     private void createDisplayPicture(Image image, int size) {
         displayImage = new ImageView(image);
         displayImage.setPreserveRatio(true);
@@ -75,7 +89,10 @@ public class ChatMessage extends HBox {
         displayFrame.getChildren().addAll(backgroundCircle, displayImage, imageBorder);
     }
 
-    private void generateMessage(boolean isBot) {
+    /**
+     * Generates the message together.
+     */
+    private void generateMessage() {
         if (isBot) {
             messageLabel.getStyleClass().add("korvus-label");
             this.getChildren().addAll(displayFrame, messageLabel);
@@ -87,6 +104,9 @@ public class ChatMessage extends HBox {
         }
     }
 
+    /**
+     * Sets up the Styling of ChatMessage.
+     */
     private void createStyling() {
         this.setPadding(new Insets(DEFAULT_SPACING));
         this.setSpacing(DEFAULT_SPACING);
@@ -95,6 +115,11 @@ public class ChatMessage extends HBox {
         this.getStylesheets().add(messageCss);
     }
 
+    /**
+     * Returns whether the ChatMessage is from Korvus.
+     *
+     * @return Whether the ChatMessage is from Korvus.
+     */
     protected boolean isBotMessage() {
         return isBot;
     }

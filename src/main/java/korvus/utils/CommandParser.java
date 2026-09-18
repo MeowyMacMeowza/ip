@@ -25,7 +25,7 @@ public class CommandParser {
             case String s when s.matches("help") -> new String[] { "help" , "" };
             case String s when s.matches("(task(s)?)|(list(s)?)") -> new String[] { "list" , "" };
             case String s when s.matches("find task .*") ->
-                    new String[] { "find", s.split("find task ", 2)[1] };
+                new String[] { "find", s.split("find task ", 2)[1] };
 
             // Add Task
             case String s when s.matches("add task .*") ->
