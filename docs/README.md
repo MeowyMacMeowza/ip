@@ -1,9 +1,9 @@
 # Korvus User Guide
-Welcome to **Korvus**, a chatbot application to track your tasks for you!
+Welcome to **Korvus**, a chatbot application to track your tasks for you!<br>
 This is the **User Guide** for using _Korvus_, containing useful information needed to use _Korvus_ effectively.
 
-To download the application, you go [here](https://github.com/MeowyMacMeowza/ip/releases) to download the jar file.
-_Note that you may need **Java 25** to run the .jar file._ 
+To download the application, you go [here](https://github.com/MeowyMacMeowza/ip/releases) to download the jar file.<br>
+_Note that you may need **Java 25** to run the korvus.jar file._ 
 
 ## Product Screenshot
 ![Screenshot of the application Korvus](Ui.png)
@@ -11,7 +11,7 @@ _Note that you may need **Java 25** to run the .jar file._
 # What Is Korvus?
 > A fully customised GUI-application equipped with tools for tracking various types of tasks, this application is for command line enthusiasts!
 
-With its intuitive and robust commands, this app can help track your most essential tasks so that you can sit back, relax, and never forget another task again!
+With its intuitive and robust commands, this app can help track your most essential tasks so that you can sit back, relax, and never forget another task again!<br>
 _**Note: effects may vary between individuals_
 
 # Key Features
@@ -21,7 +21,7 @@ This section will outline the key features of the Korvus!
 As a general note for Korvus:
 - The bot is command-driven, so most of its functionality is through the chatbot's features
 - All user inputs will be trimmed of whitespace.
-      - `"  lists "` will be pruned to `"lists"`
+  - Example: `"  lists "` will be pruned to `"lists"`
 - Commands (and its parameters) are **case-sensitive**.
 - There may be shorthands for some of the commands! But not all!
 
@@ -48,7 +48,7 @@ Use the flags -t for a ToDo, -d for a Deadline and -e for an Event.
 ```
 
 ## Adding tasks (General)
-> This command will add a new task based on the parameters provided.
+> This command will add a new task based on the parameters provided.<br>
 > If there are any huge errata, this command may fail instead.
 
 Command Formats
@@ -71,7 +71,7 @@ Added task:
 ```
 
 ## Adding todos
-> This command will add a todo task based on the parameters provided.
+> This command will add a todo task based on the parameters provided.<br>
 > If there are any huge errata, this command may fail instead.
 
 Command Formats
@@ -85,7 +85,7 @@ Added task:
 ```
 
 ## Adding deadlines
-> This command will add a deadline task based on the parameters provided.
+> This command will add a deadline task based on the parameters provided.<br>
 > If there are any huge errata, this command may fail instead.
 
 Command Formats
@@ -100,7 +100,7 @@ Added task:
 ```
 
 ## Adding events
-> This command will add an event task based on the parameters provided.
+> This command will add an event task based on the parameters provided.<br>
 > If there are any huge errata, this command may fail instead.
 
 Command Formats
@@ -147,8 +147,8 @@ Command Formats
    - Tries to mark the task with index <task_index> as done.
    - If the task is already done, an error message will show instead.
 
-**Korvus will first assume that the command parameter is <task_id> first.**
-If the parameter is an invalid index, then it will be taken as <task_name>.
+**Korvus will first assume that the command parameter is <task_id> first.**<br>
+If the parameter is an invalid index, then it will be taken as <task_name>.<br>
 An error message will show up if there are no matches in both cases.
 
 _Example Output_
@@ -169,8 +169,8 @@ Command Formats
     - Tries to mark the task with index <task_index> as not done.
     - If the task is not done, an error message will show instead.
 
-**Korvus will first assume that the command parameter is <task_id> first.**
-If the parameter is an invalid index, then it will be taken as <task_name>.
+**Korvus will first assume that the command parameter is <task_id> first.**<br>
+If the parameter is an invalid index, then it will be taken as <task_name>.<br>
 An error message will show up if there are no matches in both cases.
 
 _Example Output_
@@ -189,8 +189,8 @@ Command Formats
 2. `del[ete] task <task_id>`
     - Tries to delete the task with index <task_index>.
 
-**Korvus will first assume that the command parameter is <task_id> first.**
-If the parameter is an invalid index, then it will be taken as <task_name>.
+**Korvus will first assume that the command parameter is <task_id> first.**<br>
+If the parameter is an invalid index, then it will be taken as <task_name>.<br>
 An error message will show up if there are no matches in both cases.
 
 _Example Output_
@@ -222,7 +222,7 @@ There are task(s) matching your query!
 ```
 
 ## Echo~
-> This command will echo the user's messages~
+> This command will echo the user's messages~<br>
 > Not a callable command, but will be called if there is any invalid commands~
 
 Command Formats
