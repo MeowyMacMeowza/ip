@@ -16,12 +16,13 @@ import javafx.scene.shape.Circle;
 public class ChatMessage extends HBox {
     private static int DEFAULT_DISPLAY_SIZE = 60;
     private static int DEFAULT_DISPLAY_BORDER = 2;
-    private static int DEFAULT_SPACING = 10;
+    private static int DEFAULT_SPACING = 8;
 
     private Label messageLabel;
     private ImageView displayImage;
     private StackPane displayFrame;
     private Circle imageBorder;
+    private boolean isBot;
 
     /**
      * Returns a ChatMessage with the given message.
@@ -31,6 +32,8 @@ public class ChatMessage extends HBox {
      * @param message Content to be written.
      */
     public ChatMessage(boolean isBot, Image image, String message) {
+        this.isBot = isBot;
+
         createStyling();
         createDisplayBorder();
         createDisplayPicture(image, DEFAULT_DISPLAY_SIZE);
@@ -63,10 +66,13 @@ public class ChatMessage extends HBox {
         imageBorder.setCenterY(halfSize);
         imageBorder.setCenterX(halfSize);
 
+        Circle backgroundCircle = new Circle(halfSize, halfSize, halfSize, Color.WHITESMOKE);
+
         displayImage.setClip(new Circle(halfSize, halfSize, halfSize));
         displayImage.setFitHeight(size);
 
-        displayFrame.getChildren().addAll(displayImage, imageBorder);
+        displayFrame.getStyleClass().add("display-picture");
+        displayFrame.getChildren().addAll(backgroundCircle, displayImage, imageBorder);
     }
 
     private void generateMessage(boolean isBot) {
@@ -87,5 +93,9 @@ public class ChatMessage extends HBox {
 
         String messageCss = this.getClass().getResource("/css/chatmessage.css").toExternalForm();
         this.getStylesheets().add(messageCss);
+    }
+
+    protected boolean isBotMessage() {
+        return isBot;
     }
 }

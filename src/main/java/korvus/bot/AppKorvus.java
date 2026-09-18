@@ -8,6 +8,8 @@ import korvus.ui.AppUI;
 
 public class AppKorvus extends Korvus {
 
+    private static Duration EXIT_TIMEOUT = Duration.millis(2000);
+
     /**
      * Returns an instance of the Korvus object, with the provided parameters.
      *
@@ -34,7 +36,7 @@ public class AppKorvus extends Korvus {
      * Exits the Korvus program.
      */
     private void exitProgram() {
-        Timeline exitTimeLine = new Timeline(new KeyFrame(Duration.millis(800), (t) -> Platform.exit()));
+        Timeline exitTimeLine = new Timeline(new KeyFrame(EXIT_TIMEOUT, _ -> Platform.exit()));
         exitTimeLine.play();
     }
 }

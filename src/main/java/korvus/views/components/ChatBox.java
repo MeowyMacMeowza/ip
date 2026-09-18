@@ -1,13 +1,25 @@
 package korvus.views.components;
 
+import javafx.animation.TranslateTransition;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 /**
  * ChatBox class for to contain the chat messages for the GUI.
  */
 public class ChatBox extends ScrollPane {
+    private static double BOT_DURATION = 800;
+    private static double BOT_DIST = -500;
+    private static double USER_DURATION = 200;
+    private static double USER_DIST = 100;
+    private static double ORIGIN = 0;
+
     private VBox chatLog;
+    private ObservableList<ChatMessage> chatMessagesList;
 
     /**
      * Returns a ChatBox to be displayed in the App GUI.
@@ -17,6 +29,7 @@ public class ChatBox extends ScrollPane {
 
         this.setContent(chatLog);
         this.setUpScrollPane();
+        this.setUpChatMessagesList();
     }
 
     /**
@@ -29,14 +42,51 @@ public class ChatBox extends ScrollPane {
         this.setFitToWidth(true);
     }
 
+    private void setUpChatMessagesList() {
+        this.chatMessagesList = FXCollections.observableArrayList();
+        this.chatMessagesList.addListener((ListChangeListener<ChatMessage>) change -> {
+            while (change.next()) {
+                if (change.wasAdded() && change.getFrom() == 0) {
+                    addMessage(change.getList().getFirst());
+                } else if (change.wasRemoved() && !change.getList().isEmpty()) {
+                    addMessage(change.getList().getFirst());
+                }
+            }
+        });
+    }
+
     /**
      * Adds a new ChatMessage to the ChatBox.
      *
      * @param chatMessage ChatMessage to be added.
      */
-    public void addMessage(ChatMessage chatMessage) {
-        this.chatLog.getChildren().add(chatMessage);
+    private void addMessage(ChatMessage chatMessage) {
+        TranslateTransition transition = createTransition(chatMessage);
 
         chatMessage.maxWidthProperty().bind(this.chatLog.widthProperty());
+
+        this.chatLog.getChildren().add(chatMessage);
+        transition.play();
+        transition.setOnFinished(e -> chatMessagesList.remove(chatMessage));
+    }
+
+    public void addMessageToQueue(ChatMessage chatMessage) {
+        chatMessagesList.add(chatMessage);
+    }
+
+    private TranslateTransition createTransition(ChatMessage chatMessage) {
+        TranslateTransition translateTransition = new TranslateTransition();
+        translateTransition.setNode(chatMessage);
+
+        if (chatMessage.isBotMessage()) {
+            translateTransition.setDuration(Duration.millis(BOT_DURATION));
+            chatMessage.setTranslateX(BOT_DIST);
+            translateTransition.setToX(ORIGIN);
+        } else {
+            translateTransition.setDuration(Duration.millis(USER_DURATION));
+            chatMessage.setTranslateX(USER_DIST);
+            translateTransition.setToX(ORIGIN);
+        }
+        return translateTransition;
     }
 }

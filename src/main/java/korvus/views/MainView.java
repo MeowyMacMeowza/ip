@@ -1,6 +1,5 @@
 package korvus.views;
 
-import javafx.css.Stylesheet;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -70,13 +69,13 @@ public class MainView extends AnchorPane {
     }
 
     private void handleUserMessage() {
-        chatBox.addMessage(new ChatMessage(false, userImage, userInput.getText()));
+        chatBox.addMessageToQueue(new ChatMessage(false, userImage, userInput.getText()));
         this.korvus.processUserMessage(userInput.getText());
 
         userInput.clear();
     }
 
     public void handleKorvusMessage(String msg) {
-        chatBox.addMessage(new ChatMessage(true, korvusImage, msg));
+        chatBox.addMessageToQueue(new ChatMessage(true, korvusImage, msg));
     }
 }

@@ -2,6 +2,7 @@ package korvus.ui;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import korvus.bot.AppKorvus;
 import korvus.views.MainView;
@@ -14,6 +15,10 @@ public class AppUI extends Application implements UI {
     private static int START_HEIGHT = 800;
     private static int MIN_WIDTH = 400;
     private static int MIN_HEIGHT = 200;
+    private static String TITLE = "Korvus - a Task Tracking App!";
+    private static String ICON_IMAGE = "/images/icon.jpg";
+
+    private Image icon = new Image(this.getClass().getResourceAsStream(ICON_IMAGE));
 
     private AppKorvus korvus;
     private MainView mainView;
@@ -33,8 +38,11 @@ public class AppUI extends Application implements UI {
     }
 
     private void doWindowSettings(Stage stage) {
+        stage.setTitle(TITLE);
         stage.setMinWidth(MIN_WIDTH);
         stage.setMinHeight(MIN_HEIGHT);
+
+        stage.getIcons().add(icon);
     }
 
     @Override
