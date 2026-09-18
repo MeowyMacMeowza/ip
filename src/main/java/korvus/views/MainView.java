@@ -69,8 +69,8 @@ public class MainView extends AnchorPane {
     }
 
     private void handleUserMessage() {
-        chatBox.addMessageToQueue(new ChatMessage(false, userImage, userInput.getText()));
-        this.korvus.processUserMessage(userInput.getText());
+        chatBox.addMessageToQueue(new ChatMessage(false, userImage, userInput.getText().trim()));
+        this.korvus.processUserMessage(userInput.getText().trim());
 
         userInput.clear();
     }
